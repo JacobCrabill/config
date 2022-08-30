@@ -120,6 +120,9 @@ fi
 # Custom Aliases and Functions
 # ----------------------------------------------------------------------------
 
+# Equivalent of double-clicking on a file
+alias xo='xdg-open'
+
 # 'Pretty' print of Git log
 alias gitlog-pretty='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue) <%an> %Creset" --abbrev-commit'
 
@@ -140,6 +143,9 @@ blamedir()
     git log -n 1 --pretty=format:"$(printf "%-*s" $FILE_W "$f") $BLAME_FORMAT" -- $f;
   done;
 };
+
+# Source a local Python virtual environment
+alias venv='source .venv/bin/activate'
 
 # ----------------------------------------------------------------------------
 # Custom PATH additions
