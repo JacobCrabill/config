@@ -73,6 +73,9 @@ Plug 'puremourning/vimspector'
 " In-buffer Markdown rendering
 Plug 'ellisonleao/glow.nvim'
 
+" Open-Windows Tab bar
+Plug 'romgrk/barbar.nvim'
+
 call plug#end() " ================================================================================
 
 set completeopt=menu,menuone,noselect
