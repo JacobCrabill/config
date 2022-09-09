@@ -42,7 +42,7 @@ Plug 'hrsh7th/vim-vsnip'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'tpope/vim-fugitive'
-Plug 'JamshedVesuna/vim-markdown-preview'
+" Plug 'JamshedVesuna/vim-markdown-preview'
 Plug 'tomasiser/vim-code-dark'
 Plug 'joshdick/onedark.vim'
 Plug 'thaerkh/vim-workspace'
@@ -114,11 +114,20 @@ set updatetime=100
 
 " set background=dark
 let g:airline_theme = 'onedark'
+
+" NerdTree: Map file browser pane open/close
 nnoremap <silent> <C-o> :NERDTreeToggle %<CR>
 vnoremap p "_dP
 
 let g:indentguides_spacechar = '┆'
 let g:indentguides_tabchar = '|'
+
+" barbar: Move to previous/next tab
+nnoremap <silent>    <A-,> <Cmd>BufferPrevious<CR>
+nnoremap <silent>    <A-.> <Cmd>BufferNext<CR>
+" barbar: Re-order tab to previous/next
+nnoremap <silent>    <A-<> <Cmd>BufferMovePrevious<CR>
+nnoremap <silent>    <A->> <Cmd>BufferMoveNext<CR>
 
 set expandtab
 " show existing tab with 2 spaces width
@@ -146,9 +155,6 @@ vmap <C-v> c<ESC>"+p
 imap <C-v> <C-r><C-o>+
 tmap <C-v> <ESC>"+pi
 
-" let vim_markdown_preview_hotkey='<C-m>'
-let vim_markdown_preview_github=1
-let vim_markdown_preview_toggle=1
 let g:Lf_HideHelp = 1
 let g:Lf_UseCache = 0
 let g:Lf_UseVersionControlTool = 0
@@ -238,7 +244,9 @@ map <A-2> <C-w>l
 " tnoremap   <silent>   <A-2>    <C-\><C-n>:FloatermLast<CR>
 set mouse=a
 
-"Easy re-source"
+" Easy config edit
+nnoremap <A-)> :edit ~/.config/nvim/init.vim<CR>
+" Easy re-source
 noremap <A-0> :source ~/.config/nvim/init.vim <CR>
 
 if has("autocmd")
