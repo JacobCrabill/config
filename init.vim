@@ -2,6 +2,7 @@
 " NeoVim Config File
 " =========================================
 " Location: ~/.config/nvim/init.vim
+" Requires: NeoVim v0.7 - e.g. [v0.7.2](https://github.com/neovim/neovim/releases/tag/v0.7.2)
 "
 " First-Time Usage:
 " 1. Install a [Nerd Font](https://github.com/ryanoasis/nerd-fonts#option-3-install-script)
