@@ -8,8 +8,9 @@
 " 1. Install a [Nerd Font](https://github.com/ryanoasis/nerd-fonts#option-3-install-script)
 " 2. Install python3 support: 'pip3 install neovim pynvim'
 " 3. Install [vim-plug](https://github.com/junegunn/vim-plug)
-" 4. Call: `:PlugInstall`
-" 5. Profit
+" 4. Install clangd-9 for LSP support (`sudo apt install clangd-9`)
+" 5. Call: `:PlugInstall`
+" 6. Profit
 " ============================================================================
 call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
 Plug 'SmiteshP/nvim-navic'
