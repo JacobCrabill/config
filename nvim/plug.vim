@@ -76,7 +76,10 @@ Plug 'https://github.com/kassio/neoterm'
 Plug 'powerman/vim-plugin-AnsiEsc'
 
 " Render a code snippet to an image in your clipboard
-Plug 'krivahtoo/silicon.nvim', { 'do': './install.sh' }
+" Prerequisites:
+"   apt install libxcb-shape-*
+"   cargo install silicon
+Plug 'segeljakt/vim-silicon'
 
 " Additional language-support package manager, Mason
 Plug 'williamboman/mason.nvim'
@@ -86,3 +89,4 @@ Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'simrat39/rust-tools.nvim'
 
 call plug#end() " ================================================================================
+

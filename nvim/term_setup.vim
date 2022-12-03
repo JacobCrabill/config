@@ -4,7 +4,7 @@ tnoremap <Esc> <C-\><C-n>
 " Create a new Floaterm on startup, hide it, then setup ctrl+t to toggle it
 function InitFloaterm()
   :FloatermKill!
-  :FloatermNew
+  :FloatermNew --width=0.5 --height=0.7
   :stopinsert
   :FloatermHide
 endfunction

@@ -385,11 +385,3 @@ require('glow').setup({
   width = 150,
 })
 
-
--- Silicon (Code snippet rendering) config
-require('silicon').setup({
-  font = 'UbuntuMono Nerd Font Mono Regular=16',
-  theme = 'Monokai',
-})
-
-
