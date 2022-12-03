@@ -100,21 +100,23 @@ require('lspconfig')['clangd'].setup {
   end
 }
 
-require('lspconfig')['clangd'].setup {
+-- Zig Language Server (ZLS)
+local zls_on_attach = function(_, bufnr)
+    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+    require('completion').on_attach()
+end
+require('lspconfig')['zls'].setup {
   capabilities = capabilities,
-  cmd = { "clangd-9", "--background-index", "--header-insertion=never"},
-  on_attach = function(client, bufnr)
-      navic.attach(client, bufnr)
-  end
+  on_attach = zls_on_attach,
 }
 
 vim.diagnostic.config({virtual_text = false})
 vim.diagnostic.config({signs = false})
 
-
-
 require('nvim-treesitter.configs').setup {
-  ensure_installed = {"cpp", "c", "rust", "toml", "zig"},
+  ensure_installed = {"c", "cpp", "rust", "toml", "zig"},
   highlight = {
     enable = true,
     custom_captures = {
@@ -302,7 +304,10 @@ require('diffview').setup {
 
 require('telescope').setup{
   defaults = {
-    -- ...
+    sorting_strategy = 'ascending',
+    layout_config = {
+      prompt_position = 'top',
+    },
   },
   pickers = {
     find_files = {

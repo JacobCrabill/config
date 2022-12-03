@@ -4,7 +4,7 @@ tnoremap <Esc> <C-\><C-n>
 " Create a new Floaterm on startup, hide it, then setup ctrl+t to toggle it
 function InitFloaterm()
   :FloatermKill!
-  :FloatermNew --width=0.5 --height=0.7
+  :FloatermNew --width=0.6 --height=0.75
   :stopinsert
   :FloatermHide
 endfunction
@@ -15,6 +15,21 @@ tnoremap <C-t> <C-\><C-n>:FloatermToggle<cr>
 augroup vimrc
   autocmd VimEnter * :call InitFloaterm()
 augroup END
+
+" Clear terminal (nvim ternimal equivalent to bash 'reset')
+let s:scroll_value = 1000
+function! ClearTerminal()
+  set scrollback=1
+  let &g:scrollback=1
+  echo &scrollback
+  call feedkeys("\i")
+  call feedkeys("clear\<CR>")
+  call feedkeys("\<C-\>\<C-n>")
+  call feedkeys("\i")
+  sleep 100m
+  let &scrollback=s:scroll_value
+endfunction
+tnoremap <C-l> <C-\><C-n>:call ClearTerminal()<cr>
 
 " -------------------------------------------
 " Sample command for a more complex use case:
