@@ -1,15 +1,25 @@
 " Terminal mode: Allow ESC to exit insert mode
 tnoremap <Esc> <C-\><C-n>
 
+let g:floaterm_width = 0.6
+let g:floaterm_height = 0.75
+
 " Create a new Floaterm on startup, hide it, then setup ctrl+t to toggle it
 function InitFloaterm()
   :FloatermKill!
-  :FloatermNew --width=0.6 --height=0.75
+  :FloatermNew
   :stopinsert
   :FloatermHide
 endfunction
+
 nnoremap <C-t> :FloatermToggle<cr>
+nnoremap <A-t> :FloatermNext<cr>
+nnoremap <A-T> :FloatermPrev<cr>
+nnoremap <C-x><C-t> :FloatermNew<cr>
 tnoremap <C-t> <C-\><C-n>:FloatermToggle<cr>
+tnoremap <A-t> <C-\><C-n>:FloatermNext<cr>
+tnoremap <A-T> <C-\><C-n>:FloatermPrev<cr>
+tnoremap <C-x><C-t> <C-\><C-n>:FloatermNew<cr>
 
 " Add Floaterm setup upon NeoVim startup to our vimrc augroup
 augroup vimrc
