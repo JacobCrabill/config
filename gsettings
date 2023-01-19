@@ -1,11 +1,11 @@
 #!/bin/bash
 # Useful commands to see available settings and keybindings
-gsettings list-schemas
-gsettings list-keys org.gnome.desktop.wm.keybindings
-gsettings get org.gnome.desktop.wm.keybindings switch-to-workspace-up
-gsettings list-recursively | grep -i terminal
-gsettings list-recursively | grep -i header
-gsettings list-recursively | grep menubar
+# gsettings list-schemas
+# gsettings list-keys org.gnome.desktop.wm.keybindings
+# gsettings get org.gnome.desktop.wm.keybindings switch-to-workspace-up
+# gsettings list-recursively | grep -i terminal
+# gsettings list-recursively | grep -i header
+# gsettings list-recursively | grep menubar
 
 # Configure my preferred keybindings
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Super>Left']"
