@@ -116,41 +116,24 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# ----------------------------------------------------------------------------
-# Custom Aliases and Functions
-# ----------------------------------------------------------------------------
+# =================================================================================
+# Custom Path Additions
+# =================================================================================
 
-# Equivalent of double-clicking on a file
-alias xo='xdg-open'
+export PATH=/home/jacob/.local/include:$PATH
+export PATH=/home/jacob/.local/bin/:$PATH
+export PATH=/home/jacob/.cargo/bin/:$PATH
+export LD_LIBRARY_PATH=/home/jacob/.local/lib:$LD_LIBRARY_PATH
 
-# 'Pretty' print of Git log
-alias gitlog-pretty='git log --color --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue) <%an> %Creset" --abbrev-commit'
+export CMAKE_PREFIX_PATH=/home/jacob/.local/lib/:/home/jacob/.local/lib/cmake/:$CMAKE_PREFIX_PATH
+export CMAKE_MODULE_PATH=/home/jacob/.local/lib/:/home/jacob/.local/lib/cmake/:$CMAKE_MODULE_PATH
 
-# Update all submodules
-alias gitsub='git submodule sync --recursive && git submodule update --init --recursive'
+export CMAKE_PREFIX_PATH=/home/jacob/.local/lib/cmake/behaviortree_cpp_v3:$CMAKE_PREFIX_PATH
+export CMAKE_MODULE_PATH=/home/jacob/.local/lib/cmake/behaviortree_cpp_v3:$CMAKE_MODULE_PATH
 
-# List all remotes
-alias gitremote='git config --list | grep "remote.*url"'
+source /opt/ros/noetic/setup.bash
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/jacob/.local/share/
 
-# Git blame of a directory
-blamedir()
-{
-  FILE_W=35;
-  BLAME_FORMAT="%C(auto) %h %ad %C(dim white)%an %C(auto)%s";
-
-  for f in $1*;
-  do
-    git log -n 1 --pretty=format:"$(printf "%-*s" $FILE_W "$f") $BLAME_FORMAT" -- $f;
-  done;
-};
-
-# Source a local Python virtual environment
-alias venv='source .venv/bin/activate'
-
-# ----------------------------------------------------------------------------
-# Custom PATH additions
-# ----------------------------------------------------------------------------
-
-export PATH=/home/jacob/.local/bin:$PATH
-export PATH=/opt/gcc-arm-none-eabi-9-2020-q2-update/bin/:$PATH
+# Setup Rust environment
+source "$HOME/.cargo/env"
 
