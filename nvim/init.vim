@@ -21,56 +21,49 @@ augroup vimrc
 
   " Call Clang-Format
   autocmd BufWritePre *.h,*.hpp,*.c,*.cpp,*.vert,*.frag :ClangFormat
+
+  " Reset cursor to last location when opening file (marker '"')
+  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 augroup END
 " ============================================================================
 
 set completeopt=menu,menuone,noselect
-
-let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
-let python_highlight_all = 1
-set relativenumber
-let g:jedi#auto_initialization = 1
 set cursorline
 set cursorcolumn
 set mouse=a
+set number relativenumber
+set updatetime=100
+
+set encoding=utf-8
+scriptencoding utf-8 " Enable utf-8 in the rest of this script
 
 " Allow >256 colors
 set termguicolors
-
-set encoding=utf-8
-scriptencoding utf-8
 
 " Use case insensitive search, except when using capital letters
 set ignorecase
 set smartcase
 
+set expandtab     " Convert tabs to spaces
+set tabstop=2     " Size of existing tab characters
+set softtabstop=2 " Size of a new tab while editing
+set shiftwidth=2  " when indenting with '>', use 2 spaces width
+
+" Whitespace characters to make visibile when in 'set list'
+set listchars=tab:>-
+
+" Remap <leader> to <space>
+let mapleader=" "
+
+let g:rainbow_active = 1 " Set to 0 if you want to enable it later via :RainbowToggle
+
+let python_highlight_all = 1
+
+let g:jedi#auto_initialization = 1
+
 let g:indent_guides_auto_colors = 0
-
-set updatetime=100
-
-" NerdTree: Map file browser pane open/close
-nnoremap <silent> <C-o> :NERDTreeToggle %<CR>
-vnoremap p "_dP
-
 let g:indentguides_spacechar = '┆'
 let g:indentguides_tabchar = '|'
-
-" barbar: Move to previous/next tab
-nnoremap <silent>    <A-,> <Cmd>BufferPrevious<CR>
-nnoremap <silent>    <A-.> <Cmd>BufferNext<CR>
-" barbar: Re-order tab to previous/next
-nnoremap <silent>    <A-<> <Cmd>BufferMovePrevious<CR>
-nnoremap <silent>    <A->> <Cmd>BufferMoveNext<CR>
-
-set expandtab
-" show existing tab with 2 spaces width
-set tabstop=2
-set softtabstop=2
-" when indenting with '>', use 2 spaces width
-set shiftwidth=2
-let &t_TI = ""
-let &t_TE = ""
-set listchars=tab:>-
 
 let g:clang_format#detect_style_file=1
 let g:clang_format#enable_fallback_style=0
@@ -78,28 +71,16 @@ let g:clang_format#enable_fallback_style=0
 " TURN OFF MACROS
 map q <Nop>
 
-" For copy paste
-" vmap <C-c> "+yi
-" vmap <C-x> "+c
+" For copy/paste to/from system clipboard (register '+')
+vmap <C-c> "+y
+vmap <C-x> "+c<ESC>
 vmap <C-v> c<ESC>"+p
 imap <C-v> <C-r><C-o>+
 tmap <C-v> <ESC>"+pi
+noremap <Leader>y "+y
 
-" Map <C-L> (redraw screen) to also turn off search highlighting until the
-" next search
-nnoremap <C-L> :nohl<CR><C-L>
-
-" Glow (side-pane Markdown rendering)
-nnoremap <A-g> :Glow<CR>
-
-" Telecope Config ============================================================
-nnoremap <C-G> :Telescope live_grep<cr>
-nnoremap <C-P> :Telescope find_files<cr>
-" ============================================================================
-
-" Quick commands - goto EdgeAI, goto Home
-map EE :cd ~/Codes/EdgeAI<CR>
-map EH :cd ~/<CR>
+" Visual paste: replace selection
+vnoremap p "_dP
 
 " Jump between windows
 map <A-1> <C-w>h
@@ -110,13 +91,43 @@ nnoremap <A-)> :edit ~/.config/nvim/init.vim<CR>
 " Easy re-source
 noremap <A-0> :source ~/.config/nvim/init.vim<CR>
 
+" Remap "qq" to Esc
+inoremap qq <Esc>
+
+" Map <C-L> (redraw screen) to also turn off search highlighting until the
+" next search
+nnoremap <C-L> :nohl<CR><C-L>
+
+" Glow (side-pane Markdown rendering)
+nnoremap <A-g> :Glow<CR>
+
 " Shortcut for :Kwbd (Keep window, close buffer)
 nnoremap <C-d> :Kwbd<CR>
 
-if has("autocmd")
-  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
-endif
+" Telescope: ==================================================================
+nnoremap <C-G> :Telescope live_grep<cr>
+nnoremap <C-P> :Telescope find_files<cr>
+" ============================================================================
 
+" NerdTree: ==================================================================
+" Map file browser pane open/close
+nnoremap <silent> <C-o> :NERDTreeToggle %<CR>
+" ============================================================================
+
+" BarBar: ====================================================================
+" Move to previous/next tab
+nnoremap <silent>    <A-,> <Cmd>BufferPrevious<CR>
+nnoremap <silent>    <A-.> <Cmd>BufferNext<CR>
+" Re-order tab to previous/next
+nnoremap <silent>    <A-<> <Cmd>BufferMovePrevious<CR>
+nnoremap <silent>    <A->> <Cmd>BufferMoveNext<CR>
+" ============================================================================
+
+" Quick commands - goto EdgeAI, goto Home
+map EE :cd ~/Codes/EdgeAI<CR>
+map EH :cd ~/<CR>
+
+" Source the rest of our setup files
 :runtime pretty.vim
 :runtime term_setup.vim
 :runtime vim_setup.lua
