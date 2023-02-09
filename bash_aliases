@@ -23,9 +23,9 @@ alias gitlog='git log'
 alias gitremote='git config --list | grep "remote.*url"'
 
 # Source a local Python virtual environment
-# alias venv='source .venv/bin/activate'
 venv() {
     if [ ! -d .venv ]; then
+        echo "Creating new Python virtualenv"
         python3 -m venv .venv
     fi
     source .venv/bin/activate
