@@ -55,7 +55,7 @@ cmp.setup.cmdline(':', {
 })
 
 -- Setup lspconfig.
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
 -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
 local navic = require("nvim-navic")
 navic.setup {
@@ -116,7 +116,7 @@ vim.diagnostic.config({virtual_text = false})
 vim.diagnostic.config({signs = false})
 
 require('nvim-treesitter.configs').setup {
-  ensure_installed = {"c", "cpp", "rust", "toml", "zig"},
+  ensure_installed = {"c", "cpp", "rust", "toml", "zig", "lua", "vim"},
   highlight = {
     enable = true,
     custom_captures = {
@@ -171,6 +171,7 @@ require('lualine').setup {
   tabline = {},
   extensions = {}
 }
+
 require("nvim-treesitter.configs").setup {
   playground = {
     enable = true,
@@ -390,3 +391,19 @@ require('glow').setup({
   width = 150,
 })
 
+require('onedark').setup({
+  style = 'deep',
+
+  -- toggle theme style ---
+  toggle_style_key = "<leader>ts",
+  toggle_style_list = {'dark', 'darker', 'cool', 'deep', 'warm', 'warmer'},
+
+  colors = {
+    comment_pink = "#ee55a0",    -- My custom bright comment colors
+    comment_coral = "#d46398",
+  },
+  highlights = {
+    ["@Comment"] = {fg = '$comment_pink'},
+  }
+})
+require('onedark').load()

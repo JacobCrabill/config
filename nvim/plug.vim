@@ -43,7 +43,7 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 " Color Schemes
 Plug 'sainnhe/forest-night'
 Plug 'EdenEast/nightfox.nvim'
-Plug 'joshdick/onedark.vim'
+Plug 'navarasu/onedark.nvim'
 Plug 'drewtempelmeyer/palenight.vim'
 Plug 'karoliskoncevicius/sacredforest-vim'
 Plug 'srcery-colors/srcery-vim'

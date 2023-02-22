@@ -8,17 +8,7 @@ if s:my_scheme == "nightfox"
   " ---- Nightfox schemes
   colorscheme carbonfox
 elseif s:my_scheme == "onedark"
-  " ---- OneDark scheme
-  let g:onedark_terminal_italics = 1
-
-  " Adjust the OneDark colorscheme config
-  if (has("autocmd"))
-    augroup colorset
-      autocmd!
-      let s:comment = { "gui": "#EE55E0", "cterm": "213", "cterm16": "13" }
-      autocmd ColorScheme * call onedark#set_highlight("Comment", { "fg": s:comment })
-    augroup END
-  endif
+  " ---- OneDark scheme - Configured in Lua init
   colorscheme onedark
 elseif s:my_scheme == "palenight"
   " ---- Palenight scheme
@@ -27,5 +17,15 @@ elseif s:my_scheme == "palenight"
   let g:palenight_color_overrides = {
   \    'comment_grey': { "gui": "#EE55E0", "cterm": "213", "cterm16": "13" },
   \}
+elseif s:my_scheme == "tokyonight"
+lua << EOF
+  require("tokyonight").setup({
+    style = "storm",
+    on_colors = function(colors)
+      colors.comment = "#d46390"
+    end
+  })
+EOF
+  colorscheme tokyonight-storm
 endif
 
