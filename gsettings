@@ -7,16 +7,27 @@
 # gsettings list-recursively | grep -i header
 # gsettings list-recursively | grep menubar
 
-# Configure my preferred keybindings
+# Configure my preferred keybindings for workspace management
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Super>Left']"
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Super>Right']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "['<Super>Up']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-down "['<Super>Down']"
 gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
 gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
-gsettings set org.gnome.Terminal.Legacy.Settings headerbar false
+gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-up "['<Super><Alt>Up']"
+gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-down "['<Super><Alt>Down']"
+
+# Window management
+gsettings set org.gnome.desktop.wm.keybindings toggle-maximized "['<Super>m']"
+gsettings set org.gnome.desktop.wm.keybindings minimize "['<Super>comma']"
+gsettings set org.gnome.desktop.wm.keybindings close "['<Super>q', '<Alt>F4']"
 
 # Hide the headerbar on the terminal window (default 'zen mode')
+# Use '<Ctrl><Shift>m' to show/hide the menubar
 gsettings set org.gnome.Terminal.Legacy.Settings headerbar false
 gsettings set org.gnome.Terminal.Legacy.Settings default-show-menubar false
+
+# Disable the default '<Alt>[0-9]' keybindings, so they can be used for other purposes
 gsettings set org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/keybindings/ switch-to-tab-1 'disabled'
 gsettings set org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/keybindings/ switch-to-tab-2 'disabled'
 gsettings set org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/keybindings/ switch-to-tab-3 'disabled'
@@ -27,3 +38,7 @@ gsettings set org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/k
 gsettings set org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/keybindings/ switch-to-tab-8 'disabled'
 gsettings set org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/keybindings/ switch-to-tab-9 'disabled'
 gsettings set org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/keybindings/ switch-to-tab-10 'disabled'
+
+# Cycle between windows of an application type (alt-tab for a specific app)
+gsettings set org.gnome.desktop.wm.keybindings cycle-group "['<Alt>1']"
+gsettings set org.gnome.desktop.wm.keybindings cycle-group-backward "['<Alt>2']"
