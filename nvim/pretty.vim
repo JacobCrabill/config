@@ -29,3 +29,11 @@ EOF
   colorscheme tokyonight-storm
 endif
 
+" ==== Silicon Config (Render code to .png) ====
+let g:silicon = {
+      \   'theme':          'OneHalfDark',
+      \   'background':         '#000000',
+      \   'pad-horiz':                  0,
+      \   'pad-vert':                   0,
+      \   'window-controls':       v:false,
+      \ }

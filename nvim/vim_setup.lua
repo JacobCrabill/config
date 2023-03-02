@@ -116,7 +116,7 @@ vim.diagnostic.config({virtual_text = false})
 vim.diagnostic.config({signs = false})
 
 require('nvim-treesitter.configs').setup {
-  ensure_installed = {"c", "cpp", "rust", "toml", "zig", "lua", "vim"},
+  ensure_installed = {"c", "cpp", "rust", "toml", "zig", "lua", "vim", "python"},
   highlight = {
     enable = true,
     custom_captures = {
@@ -392,11 +392,12 @@ require('glow').setup({
 })
 
 require('onedark').setup({
-  style = 'deep',
+  style = 'dark',
 
   -- toggle theme style ---
   toggle_style_key = "<leader>ts",
-  toggle_style_list = {'dark', 'darker', 'cool', 'deep', 'warm', 'warmer'},
+  -- Available styles: dark(er), cool, deep, warm(er)
+  toggle_style_list = {'dark', 'darker', 'cool', 'warm'},
 
   colors = {
     comment_pink = "#ee55a0",    -- My custom bright comment colors

@@ -125,6 +125,7 @@ nnoremap <silent>    <A->> <Cmd>BufferMoveNext<CR>
 
 " Quick commands - goto EdgeAI, goto Home
 map EE :cd ~/Codes/EdgeAI<CR>
+map EX :cd ~/Codes/EdgeAI/src/subsystems/executive_manager<CR>
 map EH :cd ~/<CR>
 
 " Source the rest of our setup files
