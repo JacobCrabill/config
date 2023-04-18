@@ -1,6 +1,19 @@
 -- Mason
 require("mason").setup()
 
+-- NvimTree (NerdTree file browser alternative)
+-- disable netrw at the very start of your init.lua (strongly advised)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.opt.termguicolors = true
+-- require("nvim-tree").setup({
+--   update_focused_file = {
+--     enable = true,
+--     update_root = true,
+--     ignore_list = {},
+--   },
+-- })
+
 -- Setup nvim-cmp.
 local cmp = require('cmp')
 
@@ -112,11 +125,25 @@ require('lspconfig')['zls'].setup {
   on_attach = zls_on_attach,
 }
 
-vim.diagnostic.config({virtual_text = false})
 vim.diagnostic.config({signs = false})
+vim.diagnostic.config({underline = false})
+
+-- diagnostics
+vim.lsp.handlers["textDocument/publishDiagnostics"] =
+    vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+        -- Disable underline, it's very annoying
+        underline = false,
+        virtual_text = false,
+        -- Enable virtual text, override spacing to 4
+        -- virtual_text = {spacing = 4},
+        -- Use a function to dynamically turn signs off
+        -- and on, using buffer local variables
+        -- signs = true,
+        update_in_insert = false
+    })
 
 require('nvim-treesitter.configs').setup {
-  ensure_installed = {"c", "cpp", "rust", "toml", "zig", "lua", "vim", "python"},
+  ensure_installed = {"c", "cpp", "rust", "toml", "zig", "lua", "vim", "python"}, -- , "bash"},
   highlight = {
     enable = true,
     custom_captures = {
@@ -310,10 +337,11 @@ require('telescope').setup{
       prompt_position = 'top',
     },
   },
-  pickers = {
-    find_files = {
-    }
-  },
+  -- pickers = {
+  --   find_files = {
+  --     no_ignore = true, -- ignore .gitignore
+  --   }
+  -- },
   extensions = {
     fzf = {
       fuzzy = true,                    -- false will only do exact matching
@@ -399,12 +427,18 @@ require('onedark').setup({
   -- Available styles: dark(er), cool, deep, warm(er)
   toggle_style_list = {'dark', 'darker', 'cool', 'warm'},
 
+  -- Turn off italics for comments
+  code_style = {
+      comments = 'none',
+  },
+
   colors = {
     comment_pink = "#ee55a0",    -- My custom bright comment colors
     comment_coral = "#d46398",
   },
   highlights = {
-    ["@Comment"] = {fg = '$comment_pink'},
+    ["@Comment"] = {fg = '$comment_pink'},  -- Treesitter comments
+    Comment = {fg = '$comment_pink'},       -- Non-TS comments
   }
 })
 require('onedark').load()
