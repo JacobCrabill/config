@@ -22,6 +22,9 @@ augroup vimrc
   " Call Clang-Format
   autocmd BufWritePre *.h,*.hpp,*.c,*.cpp,*.vert,*.frag :ClangFormat
 
+  " Automatically strip trailing whitespace in other file types
+  autocmd BufWritePre CMakeLists.txt,*.md :StripWhitespace
+
   " Reset cursor to last location when opening file (marker '"')
   au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 augroup END
@@ -107,11 +110,16 @@ nnoremap <C-d> :Kwbd<CR>
 " Telescope: ==================================================================
 nnoremap <C-G> :Telescope live_grep<cr>
 nnoremap <C-P> :Telescope find_files<cr>
+nnoremap <C-H> :Telescope grep_string<cr>
+" Open last search result
+nnoremap <C-F> :Telescope resume<cr>
 " ============================================================================
 
-" NerdTree: ==================================================================
+" NerdTree / NvimTree: ==================================================================
 " Map file browser pane open/close
 nnoremap <silent> <C-o> :NERDTreeToggle %<CR>
+" nnoremap <silent> <C-o> :NvimTreeToggle %<CR>
+let g:NERDTreeChDirMode = 2
 " ============================================================================
 
 " BarBar: ====================================================================
