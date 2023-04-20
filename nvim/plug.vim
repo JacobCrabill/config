@@ -8,7 +8,10 @@ Plug 'tpope/vim-repeat'
 " Plug 'ggandor/lightspeed.nvim'
 Plug 'nvim-lua/plenary.nvim'
 
-Plug 'mg979/vim-visual-multi' " Multiple cursors
+" Multiple cursors:
+"   ctrl-n to select instances of current word
+"   ctrl-up/down to add cursors above/below
+Plug 'mg979/vim-visual-multi'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'xiyaowong/nvim-cursorword'
 
