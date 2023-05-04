@@ -2,7 +2,6 @@
 # =================================================================================
 # Custom Aliases
 # =================================================================================
-
 # Allow colors in 'less'
 alias less='/usr/bin/less -r'
 
@@ -45,9 +44,6 @@ blamedir()
 # Equivalent to double-clicking on a file
 alias xo='xdg-open'
 
-# Connect to the Shield office VPN
-alias cisco-vpn='/opt/cisco/anyconnect/bin/vpnui' # sdoffice.shield.ai
-
 # Pipe text to system clipboard
 alias clip='xclip -selection clipboard'
 
@@ -56,25 +52,6 @@ alias cliphash='git log | head -n 1 | cut -d " " -f 2 | xclip -selection clipboa
 
 # Run clang-format on all .h / .cpp files under the current directory
 alias do-clang-format='find . \( -name *.h -o -name *.cpp \) -type f -exec clang-format-10 -i {} \;'
-
-# Enter my Sphinx build environment
-alias sphinx='source /home/jacob/.sphinx-env/bin/activate'
-
-# VBAT Commander App
-alias vbc='/home/jacob/.local/bin/HMCWebCommander-linux-x86_64-1.1.47.AppImage'
-
-# Commonly used directories
-alias cdnv='cd ~/.config/nvim/'
-alias cde='cd ~/Codes/EdgeAI/'
-alias cdv='cd ~/Codes/vbats/'
-alias cdc='cd ~/Codes/EdgeAI/src/extern/CommonTaskBehaviorFoundations/'
-alias cdb='cd ~/Codes/EdgeAI/src/subsystems/behavior_subsystem/'
-alias cdx='cd ~/Codes/EdgeAI/src/subsystems/executive_manager/'
-alias cda='cd ~/Codes/EdgeAI/src/subsystems/automode/'
-alias cdee='cd ~/Codes/EdgeAI/src/subsystems/executive_manager/'
-alias coco='cd ~/Codes/coco/ && nvim .'
-
-alias cdros='cd /home/jacob/.cache/bazel/_bazel_jacob/68f101af79500e6e660242ddfdc0b6a2/external/'
 
 # --------------------------------------------------------------------------------
 # Python Virtual Environment Management
@@ -86,8 +63,8 @@ venv() {
     if [ $# -gt 1 ]; then
         echo "Expected 0 or 1 arguments"
         echo "usage:"
-        echo "\tvenv # Sources local .venv"
-        echo "\tvenv venv_name # Sources venv at $PYTHON_VENV_HOME/venv"
+        echo -e "\tvenv           # Sources local '.venv'"
+        echo -e "\tvenv venv_name # Sources venv at '${PYTHON_VENV_HOME}/venv_name'"
         return
     fi
 
@@ -98,7 +75,12 @@ venv() {
 
     if [ $# == 0 ]; then
         if [ ! -d .venv ]; then
-            echo "Creating Python virtual environment in current directory at .venv"
+            echo jw
+            read -p "Creating Python virtual environment in current directory at .venv - Continue? [y/N] " yn
+            case $yn in
+                [Yy]* ) ;; # Continue
+                * ) echo "Cancelling"; return;;
+            esac
             python3 -m venv .venv
         fi
         source .venv/bin/activate
@@ -112,3 +94,58 @@ venv() {
         source ${VENV_DIR}/bin/activate
     fi
 }
+
+# Autocomplete for the 'venv' function
+__venv_complete() {
+    PYTHON_VENV_HOME=${HOME}/python-venvs
+    if [ "$COMP_CWORD" -ne 1 ]; then
+        return 0
+    fi
+    local comps=""
+
+    for file in ${PYTHON_VENV_HOME}/*
+    do
+        if [ -d $file ]; then
+            comps="${comps} $(basename $file)"
+        fi
+    done
+    COMPREPLY=( $(compgen -W '$comps' -- ${COMP_WORDS[COMP_CWORD]}) )
+    return 0
+}
+complete -F __venv_complete venv
+
+# -------------------------------------------------------------------------------
+# Image File Management
+# -------------------------------------------------------------------------------
+resize_images() {
+  if [ $# -ne 2 ]; then
+    echo "Required arguments: input_dir output_dir"
+  fi
+
+  IN_DIR=$1
+  OUT_DIR=$2
+
+  mkdir -p ${OUT_DIR}
+
+  if [ "${IN_DIR}" = "${OUT_DIR}" ]; then
+    echo "Input and output directories are the same - quitting"
+    return
+  fi
+
+  for f in ${IN_DIR}/*.jpg; do
+    OUT_NAME="$(basename "${f}")"
+    OUT_NAME="${OUT_DIR}/${OUT_NAME::-4}_30pct.jpg"
+    if [ ! -f "${OUT_NAME}" ]; then
+      echo "resize ${f} to ${OUT_NAME}"
+      convert "${f}" -resize 30% "${OUT_NAME}"
+    fi
+  done
+
+}
+
+# --------------------------------------------------------------------------------
+# Private aliases (Not to be stored in this common file)
+# --------------------------------------------------------------------------------
+if [ -f ${HOME}/.private_aliases ]; then
+  source ${HOME}/.private_aliases
+fi
