@@ -7,6 +7,11 @@
 # gsettings list-recursively | grep -i header
 # gsettings list-recursively | grep menubar
 
+# Set the default terminal emulator
+# gsettings set org.gnome.desktop.default-applications.terminal exec 'gnome-terminal'      # Default in Ubuntu
+# gsettings set org.gnome.desktop.default-applications.terminal exec 'x-terminal-emulator' # Same as gnome-terminal
+gsettings set org.gnome.desktop.default-applications.terminal exec 'kitty'               # New favorite!
+
 # Configure my preferred keybindings for workspace management
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Super>Left']"
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Super>Right']"
