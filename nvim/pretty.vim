@@ -36,5 +36,5 @@ let g:silicon = {
       \   'pad-horiz':                  0,
       \   'pad-vert':                   0,
       \   'window-controls':       v:false,
+      \   'output':  '~/Documents/Silicon/silicon-{time:%Y-%m-%d-%H%M%S}.png'
       \ }
-let g:silicon['output'] = '/home/jacob/Silicon/silicon-{time:%Y-%m-%d-%H%M%S}.png'
