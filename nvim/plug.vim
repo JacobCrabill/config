@@ -8,12 +8,9 @@ Plug 'tpope/vim-repeat'
 " Plug 'ggandor/lightspeed.nvim'
 Plug 'nvim-lua/plenary.nvim'
 
-" Multiple cursors:
-"   ctrl-n to select instances of current word
-"   ctrl-up/down to add cursors above/below
-Plug 'mg979/vim-visual-multi'
-Plug 'terryma/vim-multiple-cursors'
-Plug 'xiyaowong/nvim-cursorword'
+Plug 'mg979/vim-visual-multi' " Multiple cursors
+" Plug 'terryma/vim-multiple-cursors'
+" Plug 'xiyaowong/nvim-cursorword'
 
 " telescope - Quickly search through files
 Plug 'nvim-telescope/telescope.nvim'
@@ -41,6 +38,11 @@ Plug 'tpope/vim-commentary'
 " NerdTree - Quickly and easily browse directories and files
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+" NvimTree - NerdTree alternative
+Plug 'nvim-tree/nvim-tree.lua'
+
+" Integration with Kitty for window navigation
+Plug 'knubie/vim-kitty-navigator', {'do': 'cp ./*.py ~/.config/kitty/'}
 
 " ==== Style Customization ======================================
 " Color Schemes
@@ -53,6 +55,7 @@ Plug 'srcery-colors/srcery-vim'
 Plug 'folke/tokyonight.nvim'
 Plug 'tomasiser/vim-code-dark'
 Plug 'rhysd/vim-color-spring-night'
+Plug 'overcache/NeoSolarized'
 
 " Fonts, icons, statusbars
 Plug 'nvim-lualine/lualine.nvim' " Fancy status bar. Like Vim-Airline, but better
@@ -87,6 +90,9 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'rhysd/vim-clang-format'
 Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'aklt/plantuml-syntax'
+Plug 'jjo/vim-cue'
+Plug 'fladson/vim-kitty'
 
 " Render code to a PNG image
 " Prerequisites: See https://crates.io/crates/silicon

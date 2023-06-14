@@ -23,10 +23,13 @@ augroup vimrc
   autocmd BufWritePre *.h,*.hpp,*.c,*.cpp,*.vert,*.frag :ClangFormat
 
   " Automatically strip trailing whitespace in other file types
-  autocmd BufWritePre CMakeLists.txt,*.md :StripWhitespace
+  autocmd BufWritePre CMakeLists.txt :StripWhitespace
 
   " Reset cursor to last location when opening file (marker '"')
   au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+
+  " Set the EOSLang filetype to C (for syntax highlighting purposes)
+  autocmd BufNewFile,BufRead *.eos   set syntax=cpp
 augroup END
 " ============================================================================
 
@@ -91,6 +94,7 @@ map <A-2> <C-w>l
 
 " Easy config edit
 nnoremap <A-)> :edit ~/.config/nvim/init.vim<CR>
+nnoremap <A-S-0> :edit ~/.config/nvim/init.vim<CR>
 " Easy re-source
 noremap <A-0> :source ~/.config/nvim/init.vim<CR>
 
@@ -119,7 +123,7 @@ nnoremap <C-F> :Telescope resume<cr>
 " Map file browser pane open/close
 nnoremap <silent> <C-o> :NERDTreeToggle %<CR>
 " nnoremap <silent> <C-o> :NvimTreeToggle %<CR>
-let g:NERDTreeChDirMode = 2
+" let g:NERDTreeChDirMode = 2
 " ============================================================================
 
 " BarBar: ====================================================================
@@ -129,12 +133,23 @@ nnoremap <silent>    <A-.> <Cmd>BufferNext<CR>
 " Re-order tab to previous/next
 nnoremap <silent>    <A-<> <Cmd>BufferMovePrevious<CR>
 nnoremap <silent>    <A->> <Cmd>BufferMoveNext<CR>
+nnoremap <silent>    <A-S-,> <Cmd>BufferMovePrevious<CR>
+nnoremap <silent>    <A-S-.> <Cmd>BufferMoveNext<CR>
 " ============================================================================
 
-" Quick commands - goto EdgeAI, goto Home
-map EE :cd ~/Codes/EdgeAI<CR>
-map EX :cd ~/Codes/EdgeAI/src/subsystems/executive_manager<CR>
-map EH :cd ~/<CR>
+" Quick commands - goto Home, goto ...
+map HH :cd ~/<CR>
+map <leader>h :cd ~/<CR>
+
+" Kitty Window Navigation ====================================================
+" Extends Vim window navigation seamlessly with the Kitty terminal
+let g:kitty_navigator_no_mappings = 1
+
+nnoremap <silent> <C-W>h :KittyNavigateLeft<cr>
+nnoremap <silent> <C-W>j :KittyNavigateDown<cr>
+nnoremap <silent> <C-W>k :KittyNavigateUp<cr>
+nnoremap <silent> <C-W>l :KittyNavigateRight<cr>
+" ============================================================================
 
 " Source the rest of our setup files
 :runtime pretty.vim
