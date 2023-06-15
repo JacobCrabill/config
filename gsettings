@@ -13,10 +13,10 @@
 gsettings set org.gnome.desktop.default-applications.terminal exec 'kitty'               # New favorite!
 
 # Configure my preferred keybindings for workspace management
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Super>Left']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Super>Right']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "['<Super>Up']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-down "['<Super>Down']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Super>Left','<Alt>H']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-right "['<Super>Right','<Alt>L']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-up "['<Super>Up','<Alt>K']"
+gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-down "['<Super>Down','<Alt>J']"
 gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-right "['<Super><Alt>Right']"
 gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-left "['<Super><Alt>Left']"
 gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-up "['<Super><Alt>Up']"
