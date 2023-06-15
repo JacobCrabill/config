@@ -22,6 +22,9 @@ augroup vimrc
   " Call Clang-Format
   autocmd BufWritePre *.h,*.hpp,*.c,*.cpp,*.vert,*.frag :ClangFormat
 
+  " Call markdown-format
+  autocmd BufWritePre *.md silent write | silent :execute '! mdformat --wrap 100 --end-of-line lf %' | edit! %
+
   " Automatically strip trailing whitespace in other file types
   autocmd BufWritePre CMakeLists.txt :StripWhitespace
 
