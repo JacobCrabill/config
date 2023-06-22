@@ -23,10 +23,11 @@ augroup vimrc
   autocmd BufWritePre *.h,*.hpp,*.c,*.cpp,*.vert,*.frag :ClangFormat
 
   " Call markdown-format
-  autocmd BufWritePre *.md silent write | silent :execute '! mdformat --wrap 100 --end-of-line lf %' | edit! %
+  autocmd BufWritePre *.md silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | edit! %
 
+  autocmd BufWritePre CMakeLists.txt silent write | silent :execute '! cmake-format --in-place %' | edit! %
   " Automatically strip trailing whitespace in other file types
-  autocmd BufWritePre CMakeLists.txt :StripWhitespace
+  " autocmd BufWritePre CMakeLists.txt :StripWhitespace
 
   " Reset cursor to last location when opening file (marker '"')
   au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
@@ -114,6 +115,10 @@ nnoremap <A-g> :Glow<CR>
 " Shortcut for :Kwbd (Keep window, close buffer)
 nnoremap <C-d> :Kwbd<CR>
 
+" Page Up, Page Down
+nnoremap <C-j> <PageDown>
+nnoremap <C-k> <PageUp>
+
 " Telescope: ==================================================================
 nnoremap <C-G> :Telescope live_grep<cr>
 nnoremap <C-P> :Telescope find_files<cr>
@@ -124,9 +129,9 @@ nnoremap <C-F> :Telescope resume<cr>
 
 " NerdTree / NvimTree: ==================================================================
 " Map file browser pane open/close
-nnoremap <silent> <C-o> :NERDTreeToggle %<CR>
-" nnoremap <silent> <C-o> :NvimTreeToggle %<CR>
-" let g:NERDTreeChDirMode = 2
+" nnoremap <silent> <C-o> :NERDTreeToggle %<CR>
+" let g:NERDTreeChDirMode = 1
+nnoremap <silent> <C-o> :NvimTreeToggle %<CR>
 " ============================================================================
 
 " BarBar: ====================================================================
@@ -156,5 +161,5 @@ nnoremap <silent> <C-W>l :KittyNavigateRight<cr>
 
 " Source the rest of our setup files
 :runtime pretty.vim
-:runtime term_setup.vim
+:runtime plugin_setup/term_setup.vim
 :runtime vim_setup.lua

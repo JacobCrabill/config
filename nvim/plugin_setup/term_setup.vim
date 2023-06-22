@@ -27,7 +27,7 @@ augroup vimrc
 augroup END
 
 " Clear terminal (nvim ternimal equivalent to bash 'reset')
-let s:scroll_value = 1000
+let s:scroll_value = 5000
 function! ClearTerminal()
   set scrollback=1
   let &g:scrollback=1

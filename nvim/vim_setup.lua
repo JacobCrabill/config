@@ -1,18 +1,15 @@
--- Mason
-require("mason").setup()
-
--- NvimTree (NerdTree file browser alternative)
 -- disable netrw at the very start of your init.lua (strongly advised)
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
+
+-- Enable full color and highlighting support
 vim.opt.termguicolors = true
--- require("nvim-tree").setup({
---   update_focused_file = {
---     enable = true,
---     update_root = true,
---     ignore_list = {},
---   },
--- })
+
+-- Mason
+require("mason").setup()
+
+-- Nvim-Tree
+require("plugin_setup.nvim_tree")
 
 -- Setup nvim-cmp.
 local cmp = require('cmp')
@@ -114,11 +111,12 @@ require('lspconfig')['clangd'].setup {
 }
 
 -- Zig Language Server (ZLS)
-local zls_on_attach = function(_, bufnr)
+local zls_on_attach = function(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
     require('completion').on_attach()
+    navic.attach(client, bufnr)
 end
 require('lspconfig')['zls'].setup {
   capabilities = capabilities,
@@ -143,7 +141,7 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] =
     })
 
 require('nvim-treesitter.configs').setup {
-  ensure_installed = {"c", "cpp", "rust", "toml", "zig", "lua", "vim", "python"}, -- , "bash"},
+  ensure_installed = {"c", "cpp", "rust", "toml", "zig", "lua", "vim", "python", "kotlin"}, -- , "bash"},
   highlight = {
     enable = true,
     custom_captures = {
@@ -173,7 +171,7 @@ require('nvim-treesitter.configs').setup {
 require('lualine').setup {
   options = {
     icons_enabled = true,
-    theme = 'auto',
+    theme = 'onedark',
     component_separators = { left = '', right = ''},
     section_separators = { left = '', right = ''},
     disabled_filetypes = {},
@@ -181,9 +179,11 @@ require('lualine').setup {
   },
   sections = {
     lualine_a = {'mode'},
-    lualine_b = {'branch', 'diff', 'diagnostics'},
-    lualine_c = {'filename', {navic.get_location, navic.is_available}},
-    lualine_x = {'encoding', 'fileformat', 'filetype'},
+    -- lualine_b = {'branch', 'diff', 'diagnostics'},
+    lualine_b = {'branch', 'diff'},
+    lualine_c = {'filename', {'navic', color_correction = true, navic_opts = nil}},
+    -- lualine_x = {'encoding', 'fileformat', 'filetype'},
+    lualine_x = {'filetype'},
     lualine_y = {'progress'},
     lualine_z = {'location'},
   },
@@ -421,6 +421,7 @@ require('glow').setup({
 
 require('onedark').setup({
   style = 'dark',
+  transparent = true,
 
   -- toggle theme style ---
   toggle_style_key = "<leader>ts",
