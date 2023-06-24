@@ -11,17 +11,14 @@ require("mason").setup()
 -- Nvim-Tree
 require("nvim_tree_setup")
 
--- Setup nvim-cmp.
+-- Setup nvim-cmp: Autocompletion ---------------------------------------------
 local cmp = require('cmp')
 
 cmp.setup({
   snippet = {
     -- REQUIRED - you must specify a snippet engine
     expand = function(args)
-      vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-      -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-      -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-      -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+      vim.fn["vsnip#anonymous"](args.body)
     end,
   },
   experimental = {
@@ -64,9 +61,9 @@ cmp.setup.cmdline(':', {
   })
 })
 
--- Setup lspconfig.
+-- Setup lspconfig
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
--- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
+
 local navic = require("nvim-navic")
 navic.setup {
     icons = {
@@ -102,27 +99,29 @@ navic.setup {
     depth_limit = 0,
     depth_limit_indicator = "..",
 }
-require('lspconfig')['clangd'].setup {
+
+-- Setup Clangd (C/C++ languange server) --------------------------------------
+require('lspconfig')['clangd'].setup({
   capabilities = capabilities,
   cmd = { "clangd-9", "--background-index", "--header-insertion=never"},
   on_attach = function(client, bufnr)
       navic.attach(client, bufnr)
   end
-}
+})
 
--- Zig Language Server (ZLS)
+-- Setup ZLS (Zig Language Server) --------------------------------------------
 local zls_on_attach = function(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-    require('completion').on_attach()
     navic.attach(client, bufnr)
 end
-require('lspconfig')['zls'].setup {
+require('lspconfig')['zls'].setup({
   capabilities = capabilities,
   on_attach = zls_on_attach,
-}
+})
 
+vim.diagnostic.config({virtual_text = false})
 vim.diagnostic.config({signs = false})
 vim.diagnostic.config({underline = false})
 
@@ -134,14 +133,14 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] =
         virtual_text = false,
         -- Enable virtual text, override spacing to 4
         -- virtual_text = {spacing = 4},
-        -- Use a function to dynamically turn signs off
-        -- and on, using buffer local variables
+        -- Use a function to dynamically turn signs off and on, using buffer local variables
         -- signs = true,
         update_in_insert = false
     })
 
+-- Setup TreeSitter -----------------------------------------------------------
 require('nvim-treesitter.configs').setup {
-  ensure_installed = {"c", "cpp", "rust", "toml", "zig", "lua", "vim", "python", "kotlin"}, -- , "bash"},
+  ensure_installed = {"c", "cpp", "rust", "toml", "zig", "lua", "vim", "python", "bash"},
   highlight = {
     enable = true,
     custom_captures = {
@@ -166,40 +165,6 @@ require('nvim-treesitter.configs').setup {
       node_decremental = "grm",
     },
   },
-}
-
-require('lualine').setup {
-  options = {
-    icons_enabled = true,
-    theme = 'auto',
-    component_separators = { left = '', right = ''},
-    section_separators = { left = '', right = ''},
-    disabled_filetypes = {},
-    always_divide_middle = true,
-  },
-  sections = {
-    lualine_a = {'mode'},
-    -- lualine_b = {'branch', 'diff', 'diagnostics'},
-    lualine_b = {'branch', 'diff'},
-    lualine_c = {'filename', {'navic', color_correction = true, navic_opts = nil}},
-    -- lualine_x = {'encoding', 'fileformat', 'filetype'},
-    lualine_x = {'filetype'},
-    lualine_y = {'progress'},
-    lualine_z = {'location'},
-  },
-  inactive_sections = {
-    lualine_a = {},
-    lualine_b = {},
-    lualine_c = {'filename'},
-    lualine_x = {'location'},
-    lualine_y = {},
-    lualine_z = {}
-  },
-  tabline = {},
-  extensions = {}
-}
-
-require("nvim-treesitter.configs").setup {
   playground = {
     enable = true,
     disable = {},
@@ -220,6 +185,44 @@ require("nvim-treesitter.configs").setup {
   }
 }
 
+-- Setup Lualine (statusbar) --------------------------------------------------
+require('lualine').setup {
+  options = {
+    icons_enabled = true,
+    theme = 'auto',
+    component_separators = { left = '', right = ''},
+    section_separators = { left = '', right = ''},
+    disabled_filetypes = {},
+    always_divide_middle = true,
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch', 'diff', 'diagnostics'},
+    lualine_c = {'filename', {'navic', color_correction = true, navic_opts = nil}},
+    lualine_x = {'filetype'},
+    lualine_y = {'progress'},
+    lualine_z = {'location'},
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+  tabline = {},
+  winbar = {
+    -- lualine_a = {'navic', color_correction = nil, navic_opts = nil},
+  },
+  extensions = {},
+}
+
+-- Super nice Git diff view! --------------------------------------------------
+-- Usage:
+--   DiffviewOpen (equivalent to 'git diff')
+--   DiffviewOpen HEAD~2 (equivalent to 'git diff HEAD~2')
+--   DiffviewClose (close diff view when done)
 local cb = require('diffview.config').diffview_callback
 
 require('diffview').setup {
@@ -330,6 +333,7 @@ require('diffview').setup {
   },
 }
 
+-- Telescope: Extensible (and pretty) fuzzy finder ----------------------------
 require('telescope').setup{
   defaults = {
     sorting_strategy = 'ascending',
@@ -337,11 +341,11 @@ require('telescope').setup{
       prompt_position = 'top',
     },
   },
-  -- pickers = {
-  --   find_files = {
-  --     no_ignore = true, -- ignore .gitignore
-  --   }
-  -- },
+  pickers = {
+    find_files = {
+      -- no_ignore = true, -- ignore .gitignore
+    }
+  },
   extensions = {
     fzf = {
       fuzzy = true,                    -- false will only do exact matching
@@ -353,51 +357,6 @@ require('telescope').setup{
   }
 }
 require('telescope').load_extension('fzf')
-
--- require('gitsigns').setup {
---   signs = {
---     add          = {hl = 'GitSignsAdd'   , text = '+', numhl='GitSignsAddNr'   , linehl='GitSignsAddLn'},
---     change       = {hl = 'GitSignsChange', text = '~', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn'},
---     delete       = {hl = 'GitSignsDelete', text = '-', numhl='GitSignsDeleteNr', linehl='GitSignsDeleteLn'},
---     topdelete    = {hl = 'GitSignsDelete', text = '-', numhl='GitSignsDeleteNr', linehl='GitSignsDeleteLn'},
---     changedelete = {hl = 'GitSignsChange', text = '~', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn'},
---   },
---   signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
---   numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
---   linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
---   word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
---   watch_gitdir = {
---     interval = 1000,
---     follow_files = true
---   },
---   attach_to_untracked = true,
---   current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
---   current_line_blame_opts = {
---     virt_text = true,
---     virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
---     delay = 1000,
---     ignore_whitespace = false,
---   },
---   current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
---   sign_priority = 6,
---   update_debounce = 100,
---   status_formatter = nil, -- Use default
---   max_file_length = 40000,
---   preview_config = {
---     -- Options passed to nvim_open_win
---     border = 'single',
---     style = 'minimal',
---     relative = 'cursor',
---     row = 0,
---     col = 1
---   },
---   yadm = {
---     enable = false
---   },
--- }
---
--- require('gitsigns').setup()
--- vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
 
 -- Rust language support setup
 local rt = require("rust-tools")
@@ -419,27 +378,43 @@ require('glow').setup({
   width = 150,
 })
 
+-- Colorscheme Customization --------------------------------------------------
+-- For NeoVim 0.8:
+if vim.api.nvim_call_function("has", { "nvim-0.8" }) == 1 then
+  lsp_highlights = {
+    ["comment"] = {fg = '$comment_pink'},
+    ["@comment"] = {fg = '$comment_pink'},
+  }
+end
+
+-- For NeoVim 0.9:
+if vim.api.nvim_call_function("has", { "nvim-0.9" }) == 1 then
+  lsp_highlights = {
+    ["comment"] = {fg = '$comment_pink'},
+    ["@comment"] = {fg = '$comment_pink'},
+    ["@lsp.type.comment"] = {fg = '$comment_pink'},
+  }
+end
+
+-- OneDark color scheme customizations
 require('onedark').setup({
   style = 'dark',
   transparent = false,
 
   -- toggle theme style ---
   toggle_style_key = "<leader>ts",
-  -- Available styles: dark(er), cool, deep, warm(er)
-  toggle_style_list = {'dark', 'darker', 'cool', 'warm'},
-
-  -- Turn off italics for comments
-  code_style = {
-      comments = 'none',
-  },
+  toggle_style_list = {'dark', 'cool', 'deep', 'warm'},
 
   colors = {
-    comment_pink = "#ee55a0",    -- My custom bright comment colors
+    comment_pink = "#ee55a0",  -- My custom bright comment colors
     comment_coral = "#d46398",
   },
-  highlights = {
-    ["@Comment"] = {fg = '$comment_pink'},  -- Treesitter comments
-    Comment = {fg = '$comment_pink'},       -- Non-TS comments
-  }
+  highlights = lsp_highlights,
 })
 require('onedark').load()
+
+-- Hologram image renderer
+-- Still a bit unstable, but neat!
+-- require('hologram').setup({
+--   auto_display = true,
+-- })

@@ -127,10 +127,8 @@ nnoremap <C-H> :Telescope grep_string<cr>
 nnoremap <C-F> :Telescope resume<cr>
 " ============================================================================
 
-" NerdTree / NvimTree: ==================================================================
+" NvimTree: ==================================================================
 " Map file browser pane open/close
-" nnoremap <silent> <C-o> :NERDTreeToggle %<CR>
-" let g:NERDTreeChDirMode = 1
 nnoremap <silent> <C-o> :NvimTreeToggle %<CR>
 " ============================================================================
 
