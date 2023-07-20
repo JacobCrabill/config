@@ -23,7 +23,7 @@ augroup vimrc
   autocmd BufWritePre *.h,*.hpp,*.c,*.cpp,*.vert,*.frag :ClangFormat
 
   " Call markdown-format
-  autocmd BufWritePre *.md silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | edit! %
+  autocmd BufWritePre *.md if (expand('<afile>')) =~ '*index.md' | silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | edit! %
 
   autocmd BufWritePre CMakeLists.txt silent write | silent :execute '! cmake-format --in-place %' | edit! %
   " Automatically strip trailing whitespace in other file types
@@ -61,6 +61,9 @@ set shiftwidth=2  " when indenting with '>', use 2 spaces width
 
 " Whitespace characters to make visibile when in 'set list'
 set listchars=tab:>-
+
+" Turn off line wrapping
+set nowrap
 
 " Remap <leader> to <space>
 let mapleader=" "
@@ -161,5 +164,5 @@ nnoremap <silent> <C-W>l :KittyNavigateRight<cr>
 
 " Source the rest of our setup files
 :runtime pretty.vim
-:runtime plugin_setup/term_setup.vim
-:runtime vim_setup.lua
+:runtime term_setup.vim
+:runtime lua/vim_setup.lua

@@ -98,7 +98,7 @@ require("nvim-tree").setup({
     ignore_list = {},
   },
   view = {
-    width = 40,
+    width = 35,
   },
   renderer = {
     group_empty = true,
@@ -111,6 +111,8 @@ require("nvim-tree").setup({
 
 -- Open NvimTree when opening NeoVim
 local function open_nvim_tree()
-  require("nvim-tree.api").tree.open()
+  if not vim.api.nvim_buf_is_loaded(0) then
+    require("nvim-tree.api").tree.open()
+  end
 end
 vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
