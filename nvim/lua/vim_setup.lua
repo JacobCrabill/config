@@ -9,7 +9,7 @@ vim.opt.termguicolors = true
 require("mason").setup()
 
 -- Nvim-Tree
-require("plugin_setup.nvim_tree")
+require("nvim_tree_setup")
 
 -- Setup nvim-cmp.
 local cmp = require('cmp')
@@ -171,7 +171,7 @@ require('nvim-treesitter.configs').setup {
 require('lualine').setup {
   options = {
     icons_enabled = true,
-    theme = 'onedark',
+    theme = 'auto',
     component_separators = { left = '', right = ''},
     section_separators = { left = '', right = ''},
     disabled_filetypes = {},
@@ -421,7 +421,7 @@ require('glow').setup({
 
 require('onedark').setup({
   style = 'dark',
-  transparent = true,
+  transparent = false,
 
   -- toggle theme style ---
   toggle_style_key = "<leader>ts",
