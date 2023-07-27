@@ -23,7 +23,7 @@ augroup vimrc
   autocmd BufWritePre *.h,*.hpp,*.c,*.cpp,*.vert,*.frag :ClangFormat
 
   " Call markdown-format
-  autocmd BufWritePre *.md if (expand('<afile>')) =~ '*index.md' | silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | edit! %
+  " autocmd BufWritePre *.md | silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | edit! %
 
   autocmd BufWritePre CMakeLists.txt silent write | silent :execute '! cmake-format --in-place %' | edit! %
   " Automatically strip trailing whitespace in other file types
@@ -105,9 +105,6 @@ nnoremap <A-S-0> :edit ~/.config/nvim/init.vim<CR>
 " Easy re-source
 noremap <A-0> :source ~/.config/nvim/init.vim<CR>
 
-" Remap "qq" to Esc
-inoremap qq <Esc>
-
 " Map <C-L> (redraw screen) to also turn off search highlighting until the
 " next search
 nnoremap <C-L> :nohl<CR><C-L>
@@ -148,10 +145,6 @@ nnoremap <silent>    <A-S-,> <Cmd>BufferMovePrevious<CR>
 nnoremap <silent>    <A-S-.> <Cmd>BufferMoveNext<CR>
 " ============================================================================
 
-" Quick commands - goto Home, goto ...
-map HH :cd ~/<CR>
-map <leader>h :cd ~/<CR>
-
 " Kitty Window Navigation ====================================================
 " Extends Vim window navigation seamlessly with the Kitty terminal
 let g:kitty_navigator_no_mappings = 1
@@ -163,6 +156,7 @@ nnoremap <silent> <C-W>l :KittyNavigateRight<cr>
 " ============================================================================
 
 " Source the rest of our setup files
+:runtime maps.vim
 :runtime pretty.vim
 :runtime term_setup.vim
 :runtime lua/vim_setup.lua
