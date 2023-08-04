@@ -109,9 +109,9 @@ require("nvim-tree").setup({
   on_attach = nvim_tree_on_attach,
 })
 
--- Open NvimTree when opening NeoVim
+-- Open NvimTree when opening NeoVim, if we do the usual 'nvim .'
 local function open_nvim_tree()
-  if not vim.api.nvim_buf_is_loaded(0) then
+  if vim.fn.getcwd() == vim.fn.expand("%") then
     require("nvim-tree.api").tree.open()
   end
 end
