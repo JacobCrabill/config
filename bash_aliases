@@ -25,6 +25,8 @@ alias gitremote='git config --list | grep "remote.*url"'
 alias gitshow='git show --compact-summary'
 
 alias grc='git rebase --continue'
+alias gri='git rebase -i'
+alias grim='git rebase -i master'
 
 # Git blame of a directory
 blamedir()
@@ -37,6 +39,11 @@ blamedir()
     git log -n 10 --pretty="$(printf "%-*s" $FILE_W "$f") $BLAME_FORMAT" -- $f
   done;
 };
+
+# --------------------------------------------------------------------------------
+# Kitty, NeoVim, etc.
+# --------------------------------------------------------------------------------
+alias ktheme='kitty +kitten themes'
 
 # --------------------------------------------------------------------------------
 # Miscellaneous
@@ -52,6 +59,11 @@ alias cliphash='git log | head -n 1 | cut -d " " -f 2 | xclip -selection clipboa
 
 # Run clang-format on all .h / .cpp files under the current directory
 alias do-clang-format='find . \( -name *.h -o -name *.cpp \) -type f -exec clang-format-10 -i {} \;'
+
+alias enable_coredump='sudo systemctl --system' # Must have "kernel.core_pattern=$HOME/data/coredump/core.%E.%e.%t" in "/etc/sysctl.conf"
+
+alias jokeme='curl -Gs "https://v2.jokeapi.dev/joke/Pun?format=txt&type=twopart&blacklistFlags=nsfw,religious,political,racist,sexist,explicit" && echo ""'
+alias jokecow='curl -Gs "https://v2.jokeapi.dev/joke/Pun?format=txt&type=twopart&blacklistFlags=nsfw,religious,political,racist,sexist,explicit" | cowsay | lolcat'
 
 # --------------------------------------------------------------------------------
 # Python Virtual Environment Management
