@@ -60,14 +60,14 @@ fi
 if [ "$color_prompt" = yes ]; then
     PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    PS1='${debian_chroot:+$debian_chroot}\u@\h:\w\$ '
 fi
 unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    PS1="\[\e]0;${debian_chroot:+$debian_chroot}\u@\h: \w\a\]$PS1"
     ;;
 *)
     ;;
@@ -102,8 +102,8 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+if [ -f ${HOME}/.bash_aliases ]; then
+    . ${HOME}/.bash_aliases
 fi
 
 # enable programmable completion features (you don't need to enable
@@ -121,20 +121,28 @@ fi
 # Custom Path Additions
 # =================================================================================
 
-export PATH=/home/jacob/.local/include:$PATH
-export PATH=/home/jacob/.local/bin/:$PATH
-export PATH=/home/jacob/.cargo/bin/:$PATH
+export PATH=${HOME}/.local/include:$PATH
+export PATH=${HOME}/.local/bin/:$PATH
+export PATH=${HOME}/.cargo/bin/:$PATH
 export LD_LIBRARY_PATH=/home/jacob/.local/lib:$LD_LIBRARY_PATH
 
-export CMAKE_PREFIX_PATH=/home/jacob/.local/lib/:/home/jacob/.local/lib/cmake/:$CMAKE_PREFIX_PATH
-export CMAKE_MODULE_PATH=/home/jacob/.local/lib/:/home/jacob/.local/lib/cmake/:$CMAKE_MODULE_PATH
+# Custom path setup for locally installed applications
+if [ -f ${HOME}/.local/apps/setup.sh ]; then
+  . ${HOME}/.local/apps/setup.sh
+fi
 
-export CMAKE_PREFIX_PATH=/home/jacob/.local/lib/cmake/behaviortree_cpp_v3:$CMAKE_PREFIX_PATH
-export CMAKE_MODULE_PATH=/home/jacob/.local/lib/cmake/behaviortree_cpp_v3:$CMAKE_MODULE_PATH
+# Setup extra CMake paths (for find_package() and include() support)
+export CMAKE_PREFIX_PATH=${HOME}/.local/lib/:${HOME}/.local/lib/cmake/:$CMAKE_PREFIX_PATH
+export CMAKE_MODULE_PATH=${HOME}/.local/lib/:${HOME}/.local/lib/cmake/:$CMAKE_MODULE_PATH
 
-source /opt/ros/noetic/setup.bash
-export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/jacob/.local/share/
+export CMAKE_PREFIX_PATH=${HOME}/.local/lib/cmake/behaviortree_cpp_v3:$CMAKE_PREFIX_PATH
+export CMAKE_MODULE_PATH=${HOME}/.local/lib/cmake/behaviortree_cpp_v3:$CMAKE_MODULE_PATH
+
+# Setup ROS, if installed
+if [ -f /opt/ros/noetic/setup.bash ]; then
+  source /opt/ros/noetic/setup.bash
+  export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/jacob/.local/share/
+fi
 
 # Setup Rust environment
-source "$HOME/.cargo/env"
-
+source ${HOME}/.cargo/env
