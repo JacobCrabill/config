@@ -25,9 +25,8 @@ augroup vimrc
   " Call markdown-format
   " autocmd BufWritePre *.md | silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | edit! %
 
-  autocmd BufWritePre CMakeLists.txt silent write | silent :execute '! cmake-format --in-place %' | edit! %
   " Automatically strip trailing whitespace in other file types
-  " autocmd BufWritePre CMakeLists.txt :StripWhitespace
+  " autocmd BufWritePre <other file types here> :StripWhitespace
 
   " Reset cursor to last location when opening file (marker '"')
   au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
@@ -158,3 +157,4 @@ nnoremap <silent> <C-W>l :KittyNavigateRight<cr>
 :runtime pretty.vim
 :runtime term_setup.vim
 :runtime lua/vim_setup.lua
+:runtimg lua/autocmds.lua
