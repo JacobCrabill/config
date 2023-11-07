@@ -31,8 +31,8 @@ augroup vimrc
   " Reset cursor to last location when opening file (marker '"')
   au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 
-  " Set the EOSLang filetype to C (for syntax highlighting purposes)
-  autocmd BufNewFile,BufRead *.eos   set syntax=cpp
+  " Connect the EOSLang filetype to the eos syntax highlighter
+  autocmd BufNewFile,BufRead *.eos   set syntax=eos
 augroup END
 " ============================================================================
 
