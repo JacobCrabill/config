@@ -1,3 +1,7 @@
+-- disable netrw at the very start of your init.lua (strongly advised)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- NvimTree (NerdTree file browser alternative)
 local function nvim_tree_on_attach(bufnr)
   local api = require('nvim-tree.api')

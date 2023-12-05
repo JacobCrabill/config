@@ -23,15 +23,18 @@ augroup vimrc
   autocmd BufWritePre *.h,*.hpp,*.c,*.cpp,*.vert,*.frag :ClangFormat
 
   " Call markdown-format
-  " autocmd BufWritePre *.md | silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | edit! %
+  autocmd BufWritePre *.md | silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | edit! %
 
   " Automatically strip trailing whitespace in other file types
-  " autocmd BufWritePre <other file types here> :StripWhitespace
+  " autocmd BufWritePre <other file type here> :StripWhitespace
 
   " Reset cursor to last location when opening file (marker '"')
   au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 
-  " Connect the EOSLang filetype to the eos syntax highlighter
+  " Disable trailing whitespace highlighting in Markdown previews
+  autocmd BufNewFile,BufRead *.mdp DisableWhitespace
+
+  " Set the EOSLang filetype to C (for syntax highlighting purposes)
   autocmd BufNewFile,BufRead *.eos   set syntax=eos
 augroup END
 " ============================================================================
@@ -98,6 +101,9 @@ vnoremap p "_dP
 map <A-1> <C-w>h
 map <A-2> <C-w>l
 
+" Exit insert mode with my right hand w/o leaving home row
+inoremap ,, <ESC>
+
 " Easy config edit
 nnoremap <A-)> :edit ~/.config/nvim/init.vim<CR>
 nnoremap <A-S-0> :edit ~/.config/nvim/init.vim<CR>
@@ -118,6 +124,9 @@ nnoremap <C-d> :Kwbd<CR>
 nnoremap <C-j> <PageDown>
 nnoremap <C-k> <PageUp>
 
+" Format JSON files
+nnoremap <leader>jq :%!jq<cr>
+
 " Telescope: ==================================================================
 nnoremap <C-G> :Telescope live_grep<cr>
 nnoremap <C-P> :Telescope find_files<cr>
@@ -126,8 +135,10 @@ nnoremap <C-H> :Telescope grep_string<cr>
 nnoremap <C-F> :Telescope resume<cr>
 " ============================================================================
 
-" NvimTree: ==================================================================
+" NerdTree / NvimTree: ==================================================================
 " Map file browser pane open/close
+" nnoremap <silent> <C-o> :NERDTreeToggle %<CR>
+" let g:NERDTreeChDirMode = 1
 nnoremap <silent> <C-o> :NvimTreeToggle %<CR>
 " ============================================================================
 
@@ -156,5 +167,4 @@ nnoremap <silent> <C-W>l :KittyNavigateRight<cr>
 :runtime maps.vim
 :runtime pretty.vim
 :runtime term_setup.vim
-:runtime lua/vim_setup.lua
-:runtimg lua/autocmds.lua
+:runtime lua/init.lua

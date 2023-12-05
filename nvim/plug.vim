@@ -36,9 +36,10 @@ Plug 'tpope/vim-fugitive' " Nice Git integration
 Plug 'tpope/vim-commentary'
 
 " NerdTree - Quickly and easily browse directories and files
-Plug 'preservim/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
-" NvimTree - NerdTree alternative
+" Plug 'preservim/nerdtree'
+" Plug 'Xuyuanp/nerdtree-git-plugin'
+
+" NvimTree - NerdTree alternative for NeoVim writtin in Lua
 Plug 'nvim-tree/nvim-tree.lua'
 
 " Integration with Kitty for window navigation
@@ -46,16 +47,19 @@ Plug 'knubie/vim-kitty-navigator', {'do': 'cp ./*.py ~/.config/kitty/'}
 
 " ==== Style Customization ======================================
 " Color Schemes
-Plug 'sainnhe/forest-night'
+" Plug 'sainnhe/forest-night'
 Plug 'EdenEast/nightfox.nvim'
 Plug 'navarasu/onedark.nvim'
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'drewtempelmeyer/palenight.vim'
-Plug 'karoliskoncevicius/sacredforest-vim'
-Plug 'srcery-colors/srcery-vim'
+" Plug 'karoliskoncevicius/sacredforest-vim'
+" Plug 'srcery-colors/srcery-vim'
 Plug 'folke/tokyonight.nvim'
-Plug 'tomasiser/vim-code-dark'
-Plug 'rhysd/vim-color-spring-night'
-Plug 'overcache/NeoSolarized'
+" Plug 'tomasiser/vim-code-dark'
+" Plug 'rhysd/vim-color-spring-night'
+" Plug 'overcache/NeoSolarized'
+Plug 'shaunsingh/solarized.nvim'
+Plug 'rmehri01/onenord.nvim'
 
 " Fonts, icons, statusbars
 Plug 'nvim-lualine/lualine.nvim' " Fancy status bar. Like Vim-Airline, but better
@@ -68,9 +72,6 @@ Plug 'rgarver/Kwbd.vim'
 
 " Debugging support
 Plug 'puremourning/vimspector'
-
-" In-buffer Markdown rendering
-Plug 'jacobcrabill/glow.nvim'
 
 " Open-Windows Tab bar
 Plug 'romgrk/barbar.nvim'
@@ -94,8 +95,16 @@ Plug 'aklt/plantuml-syntax'
 Plug 'jjo/vim-cue'
 Plug 'fladson/vim-kitty'
 
+" ==== Debugging Support ========================================
+" Plug 'sakhnik/nvim-gdb'
+
+" ==== Misc Tools ==============================================
 " Render code to a PNG image
 " Prerequisites: See https://crates.io/crates/silicon
 "   cargo install silicon
 Plug 'segeljakt/vim-silicon'
+
+" In-buffer Markdown rendering
+Plug 'jacobcrabill/glow.nvim'
+
 call plug#end() " =============================================================
