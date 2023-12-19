@@ -4,32 +4,32 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protoc
 local navic = require("nvim-navic")
 navic.setup {
     icons = {
-        File          = " ",
+        File          = "󰈙 ",
         Module        = " ",
-        Namespace     = " ",
+        Namespace     = "󰌗 ",
         Package       = " ",
-        Class         = " ",
-        Method        = " ",
+        Class         = "󰌗 ",
+        Method        = "󰆧 ",
         Property      = " ",
         Field         = " ",
         Constructor   = " ",
-        Enum          = "練",
-        Interface     = "練",
-        Function      = " ",
-        Variable      = " ",
-        Constant      = " ",
+        Enum          = "󰕘",
+        Interface     = "󰕘",
+        Function      = "󰊕 ",
+        Variable      = "󰆧 ",
+        Constant      = "󰏿 ",
         String        = " ",
-        Number        = " ",
+        Number        = "󰎠 ",
         Boolean       = "◩ ",
-        Array         = " ",
-        Object        = " ",
-        Key           = " ",
-        Null          = "ﳠ ",
+        Array         = "󰅪 ",
+        Object        = "󰅩 ",
+        Key           = "󰌋 ",
+        Null          = "󰟢 ",
         EnumMember    = " ",
-        Struct        = " ",
+        Struct        = "󰌗 ",
         Event         = " ",
-        Operator      = " ",
-        TypeParameter = " ",
+        Operator      = "󰆕 ",
+        TypeParameter = "󰊄 ",
     },
     highlight = false,
     separator = " > ",
@@ -57,6 +57,9 @@ local zls_on_attach = function(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+    -- Turn off semantic tokens overriding our current highlighting
+    -- See: https://github.com/neovim/neovim/pull/21100
+    -- client.server_capabilities.semanticTokensProvider = nil
     require('completion').on_attach()
     navic.attach(client, bufnr)
 end

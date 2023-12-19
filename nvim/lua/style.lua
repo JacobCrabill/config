@@ -24,8 +24,12 @@ require('onedark').setup({
     comment_coral = "#d46398",
   },
   highlights = {
-    ["@Comment"] = {fg = '$comment_pink'},  -- Treesitter comments
-    Comment = {fg = '$comment_pink'},       -- Non-TS comments
+    -- Treesitter token types
+    ["@Comment"] = {fg = '$comment_pink'},
+    -- Built-in token types
+    Comment = {fg = '$comment_pink'},
+    -- LSP token types
+    ["@lsp.type.comment"] = { fg = '$comment_pink' },
   }
 })
 require('onedark').load()
