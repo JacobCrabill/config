@@ -7,7 +7,7 @@ require('glow').setup({
 -- OneDark Color Scheme config
 require('onedark').setup({
   style = 'dark',
-  transparent = false,
+  transparent = true, -- show/hide background
 
   -- toggle theme style ---
   toggle_style_key = "<leader>ts",

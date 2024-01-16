@@ -23,7 +23,7 @@ augroup vimrc
   autocmd BufWritePre *.h,*.hpp,*.c,*.cpp,*.vert,*.frag :ClangFormat
 
   " Call markdown-format
-  autocmd BufWritePre *.md | silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | edit! %
+  autocmd BufWritePre *.md | silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | silent edit! %
 
   " Automatically strip trailing whitespace in other file types
   " autocmd BufWritePre <other file type here> :StripWhitespace
@@ -41,7 +41,7 @@ augroup END
 
 set completeopt=menu,menuone,noselect
 set cursorline
-set cursorcolumn
+set nocursorcolumn
 set mouse=a
 set number relativenumber
 set updatetime=100
@@ -140,6 +140,7 @@ nnoremap <C-F> :Telescope resume<cr>
 " nnoremap <silent> <C-o> :NERDTreeToggle %<CR>
 " let g:NERDTreeChDirMode = 1
 nnoremap <silent> <C-o> :NvimTreeToggle %<CR>
+nnoremap <C-0> :NvimTreeFocus<CR>
 " ============================================================================
 
 " BarBar: ====================================================================
