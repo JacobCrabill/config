@@ -50,6 +50,7 @@ Plug 'knubie/vim-kitty-navigator', {'do': 'cp ./*.py ~/.config/kitty/'}
 " Plug 'sainnhe/forest-night'
 Plug 'EdenEast/nightfox.nvim'
 Plug 'navarasu/onedark.nvim'
+Plug 'marko-cerovac/material.nvim'
 Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'drewtempelmeyer/palenight.vim'
 " Plug 'karoliskoncevicius/sacredforest-vim'
