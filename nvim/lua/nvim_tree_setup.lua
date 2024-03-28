@@ -99,7 +99,7 @@ require("nvim-tree").setup({
   update_focused_file = {
     enable = true,
     update_root = false,
-    ignore_list = {},
+    ignore_list = { },
   },
   view = {
     width = 35,
@@ -109,6 +109,11 @@ require("nvim-tree").setup({
   },
   filters = {
     dotfiles = true,
+    exclude = { 'deps' }, -- Patterns to exclude from the loaded filters (un-filters).
+  },
+  git = {
+    enable = true,
+    ignore = true,
   },
   on_attach = nvim_tree_on_attach,
 })

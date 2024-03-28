@@ -80,6 +80,7 @@ require("material").setup({
   custom_colors = function(colors)
       -- colors.syntax.comments = my_colors.coral
       colors.syntax.comments = my_colors.baby_pink
+      colors.editor.line_numbers = "#5A4F6A" -- Lighter shade of grey
   end
 })
 

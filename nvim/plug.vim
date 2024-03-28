@@ -72,7 +72,9 @@ Plug 'kyazdani42/nvim-web-devicons'
 Plug 'rgarver/Kwbd.vim'
 
 " Debugging support
-Plug 'puremourning/vimspector'
+" Plug 'puremourning/vimspector'
+Plug 'mfussenegger/nvim-dap'
+Plug 'mfussenegger/nvim-dap-ui'
 
 " Open-Windows Tab bar
 Plug 'romgrk/barbar.nvim'
@@ -88,13 +90,14 @@ Plug 'powerman/vim-plugin-AnsiEsc'
 Plug 'ziglang/zig.vim' " Zig language support
 Plug 'simrat39/rust-tools.nvim' " Rust language support
 Plug 'neovim/nvim-lspconfig'
-Plug 'octol/vim-cpp-enhanced-highlight'
+" Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'rhysd/vim-clang-format'
 Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'aklt/plantuml-syntax'
 Plug 'jjo/vim-cue'
 Plug 'fladson/vim-kitty'
+Plug 'folke/neodev.nvim' " Lua & NeoVim API LSP support
 
 " ==== Debugging Support ========================================
 " Plug 'sakhnik/nvim-gdb'

@@ -1,5 +1,9 @@
+-- Enable Lua / NeoVim API support
+require('neodev').setup({})
+
 -- Setup lspconfig
 local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+local lspconfig = require('lspconfig')
 
 local navic = require("nvim-navic")
 navic.setup {
@@ -46,7 +50,7 @@ local clangd_on_attach = function(client, bufnr)
     require('completion').on_attach()
     navic.attach(client, bufnr)
 end
-require('lspconfig')['clangd'].setup {
+lspconfig.clangd.setup {
   capabilities = capabilities,
   cmd = { "clangd-12", "--background-index", "--header-insertion=never"},
   on_attach = clangd_on_attach,
@@ -55,15 +59,15 @@ require('lspconfig')['clangd'].setup {
 -- Zig Language Server (ZLS)
 local zls_on_attach = function(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, nil)
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, nil)
     -- Turn off semantic tokens overriding our current highlighting
     -- See: https://github.com/neovim/neovim/pull/21100
     -- client.server_capabilities.semanticTokensProvider = nil
     require('completion').on_attach()
     navic.attach(client, bufnr)
 end
-require('lspconfig')['zls'].setup {
+lspconfig.zls.setup {
   capabilities = capabilities,
   on_attach = zls_on_attach,
 }
@@ -80,6 +84,17 @@ rt.setup({
       vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
     end,
   },
+})
+
+-- Lua language support (including NeoVim APIs)
+lspconfig.lua_ls.setup({
+  settings = {
+    Lua = {
+      completion = {
+        callSnippet = "Replace"
+      }
+    }
+  }
 })
 
 ----------------------------------------------------------------
