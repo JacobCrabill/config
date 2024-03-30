@@ -10,10 +10,11 @@ my_colors = {
   comment_coral = "#d46398",
   purple = "#C792EA",
   purple2 = "#9C82D9",
+  purple_grey = "#5D4F68",
   dark_purple = "#B480D6",
   coral = "#FF9CAC",
   lime = "#BFD982",
-  baby_pink = "#D98293",
+  baby_pink = "#D96293",
 }
 
 -- OneDark Color Scheme config
@@ -65,6 +66,8 @@ require("material").setup({
       filetypes = {}, -- Specify which filetypes get the contrasted (darker) background
   },
 
+  transparent = true,
+
   high_visibility = {
       lighter = false, -- Enable higher contrast text for lighter style
       darker = false, -- Enable higher contrast text for darker style
@@ -78,9 +81,8 @@ require("material").setup({
   },
 
   custom_colors = function(colors)
-      -- colors.syntax.comments = my_colors.coral
-      colors.syntax.comments = my_colors.baby_pink
-      colors.editor.line_numbers = "#5A4F6A" -- Lighter shade of grey
+    colors.syntax.comments = my_colors.baby_pink
+    colors.editor.line_numbers = my_colors.purple_grey
   end
 })
 

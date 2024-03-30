@@ -19,14 +19,14 @@ require('lualine_setup')
 -- Telescope
 require('telescope_setup')
 
+-- Language Setup (LSPs)
+require('lsp_setup')
+
 -- TreeSitter
 require('ts_setup')
 
 -- Misc. Style Config
 require('style')
-
--- Language Setup (LSPs)
-require('lsp_setup')
 
 -- Gitsigns: Git status tracking symbols
 -- require('gitsigns_setup.lua')

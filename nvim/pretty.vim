@@ -1,5 +1,6 @@
 " ======== Colorscheme Config ========
-highlight Normal guibg=NONE ctermbg=NONE
+highlight Normal guibg=none ctermbg=none
+highlight NonText guibg=none ctermbg=none
 set background=dark
 
 " " ==== Silicon Config (Render code to .png)

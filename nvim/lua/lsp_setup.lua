@@ -61,6 +61,7 @@ local zls_on_attach = function(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, nil)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, nil)
+    vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references, nil)
     -- Turn off semantic tokens overriding our current highlighting
     -- See: https://github.com/neovim/neovim/pull/21100
     -- client.server_capabilities.semanticTokensProvider = nil

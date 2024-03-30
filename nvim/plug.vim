@@ -74,7 +74,10 @@ Plug 'rgarver/Kwbd.vim'
 " Debugging support
 " Plug 'puremourning/vimspector'
 Plug 'mfussenegger/nvim-dap'
-Plug 'mfussenegger/nvim-dap-ui'
+Plug 'rcarriga/nvim-dap-ui'
+Plug 'nvim-neotest/nvim-nio' " nvim-dap-ui says it's needed
+Plug 'nvim-telescope/telescope-dap.nvim'
+Plug 'theHamsta/nvim-dap-virtual-text'
 
 " Open-Windows Tab bar
 Plug 'romgrk/barbar.nvim'

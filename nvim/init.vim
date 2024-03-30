@@ -1,6 +1,6 @@
 " ============================================================================
 " NeoVim Config File
-" ---------------------------------------------------------------------------=
+" ----------------------------------------------------------------------------
 " Location: ~/.config/nvim/init.vim
 " Requires: NeoVim v0.7 - e.g. [v0.7.2](https://github.com/neovim/neovim/releases/tag/v0.7.2)
 "
@@ -14,34 +14,9 @@
 " Source our plugin include file
 :runtime plug.vim
 
-" Setup Autocommands =========================================================
-augroup vimrc
-  " Remove all vimrc autocommands
-  autocmd!
-
-  " Call Clang-Format
-  autocmd BufWritePre *.h,*.hpp,*.c,*.cpp,*.vert,*.frag :ClangFormat
-
-  " Call markdown-format
-  autocmd BufWritePre *.md | silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | silent edit! %
-
-  " Automatically strip trailing whitespace in other file types
-  " autocmd BufWritePre <other file type here> :StripWhitespace
-
-  " Reset cursor to last location when opening file (marker '"')
-  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
-
-  " Disable trailing whitespace highlighting in Markdown previews
-  autocmd BufNewFile,BufRead *.mdp DisableWhitespace
-
-  " Set the EOSLang filetype to C (for syntax highlighting purposes)
-  autocmd BufNewFile,BufRead *.eos   set syntax=eos
-augroup END
-" ============================================================================
-
 set completeopt=menu,menuone,noselect
 set cursorline
-set nocursorcolumn
+" set cursorcolumn
 set mouse=a
 set number relativenumber
 set updatetime=100
@@ -104,12 +79,6 @@ map <A-2> <C-w>l
 " Exit insert mode with my right hand w/o leaving home row
 inoremap ,, <ESC>
 
-" Easy config edit
-nnoremap <A-)> :edit ~/.config/nvim/init.vim<CR>
-nnoremap <A-S-0> :edit ~/.config/nvim/init.vim<CR>
-" Easy re-source
-noremap <A-0> :source ~/.config/nvim/init.vim<CR>
-
 " Map <C-L> (redraw screen) to also turn off search highlighting until the
 " next search
 nnoremap <C-L> :nohl<CR><C-L>
@@ -127,20 +96,12 @@ nnoremap <C-k> <PageUp>
 " Format JSON files
 nnoremap <leader>jq :%!jq<cr>
 
-" Telescope: ==================================================================
+" Telescope: =================================================================
 nnoremap <C-G> :Telescope live_grep<cr>
 nnoremap <C-P> :Telescope find_files<cr>
 nnoremap <C-H> :Telescope grep_string<cr>
 " Open last search result
 nnoremap <C-F> :Telescope resume<cr>
-" ============================================================================
-
-" NerdTree / NvimTree: ==================================================================
-" Map file browser pane open/close
-" nnoremap <silent> <C-o> :NERDTreeToggle %<CR>
-" let g:NERDTreeChDirMode = 1
-nnoremap <silent> <C-o> :NvimTreeToggle %<CR>
-nnoremap <C-0> :NvimTreeFocus<CR>
 " ============================================================================
 
 " BarBar: ====================================================================
@@ -165,7 +126,7 @@ nnoremap <silent> <C-W>l :KittyNavigateRight<cr>
 " ============================================================================
 
 " Source the rest of our setup files
+:runtime lua/init.lua
 :runtime maps.vim
 :runtime pretty.vim
 :runtime term_setup.vim
-:runtime lua/init.lua
