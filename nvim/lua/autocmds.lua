@@ -3,12 +3,15 @@ vim.api.nvim_create_augroup('AutoFmt', {})
 vim.api.nvim_create_augroup('OnOpen', {})
 
 vim.g.fmt_enable_exclusions = true
+vim.g.autoformat_enabled = true
 
 -- Reset cursor to last location when opening file (marker '"')
 vim.api.nvim_create_autocmd('BufReadpost', {
   pattern = { '*' },
   group = 'OnOpen',
-  callback = [[if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif]],
+  callback = function()
+    vim.api.nvim_command([[if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif]])
+  end
 })
 
 -- Disable trailing whitespace highligting for Markdown previews
@@ -22,14 +25,19 @@ vim.api.nvim_create_autocmd({'BufNewFile', 'BufRead'}, {
 vim.api.nvim_create_autocmd({'BufNewFile', 'BufNewFile'}, {
   pattern = { '*.eos' },
   group = 'OnOpen',
-  callback = "set syntax=eos",
+  callback = function()
+    vim.api.nvim_command([[set syntax=eos]])
+  end
 })
-
 
 -- C/C++ auto-formatter (Clang-Format)
 vim.api.nvim_create_autocmd('BufWritePre', {
   group = 'AutoFmt',
-  callback = "StripWhitespace",
+  callback = function()
+    if vim.g.autoformat_enabled then
+      vim.api.nvim_command([[:StripWhitespace]])
+    end
+  end
 })
 
 -- C/C++ auto-formatter (Clang-Format)
@@ -37,7 +45,9 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = { '*.c', '*.cpp', '*.h', '*.hpp' },
   group = 'AutoFmt',
   callback = function()
-    vim.api.nvim_command([[:ClangFormat]])
+    if vim.g.autoformat_enabled then
+      vim.api.nvim_command([[:ClangFormat]])
+    end
   end
 })
 
@@ -60,7 +70,7 @@ vim.api.nvim_create_autocmd('BufWritePre', {
       end
     end
 
-    if excluded == false then
+    if vim.g.autoformat_enabled and excluded == false then
       vim.api.nvim_command([[silent write | silent :execute '! cmake-format --in-place %' | edit! %]])
     end
   end
@@ -78,6 +88,19 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = { '*.md' },
   group = 'AutoFmt',
   callback = function()
-    vim.api.nvim_command([[silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | edit! %]])
+    if vim.g.autoformat_enabled then
+      vim.api.nvim_command([[silent write | silent :execute '! mdformat --wrap 100 --end-of-line keep %' | edit! %]])
+    end
   end
 })
+
+-- Enable/Disable format-on-save for all languages
+function DisableAutoFmt()
+  vim.g.autoformat_enabled = false
+end
+function EnableAutoFmt()
+  vim.g.autoformat_enabled = true
+end
+vim.api.nvim_create_user_command('DisableAutoFmt', DisableAutoFmt, {})
+vim.api.nvim_create_user_command('EnableAutoFmt', EnableAutoFmt, {})
+
