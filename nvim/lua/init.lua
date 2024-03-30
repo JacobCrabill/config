@@ -1,6 +1,9 @@
 -- Enable full color and highlighting support
 vim.opt.termguicolors = true
 
+-- Keybindings
+require('maps')
+
 -- Mason
 require("mason").setup()
 
@@ -24,6 +27,9 @@ require('lsp_setup')
 
 -- TreeSitter
 require('ts_setup')
+
+-- DAP (Debug Adapter Protocol)
+require('dap_config')
 
 -- Misc. Style Config
 require('style')
