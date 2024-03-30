@@ -17,6 +17,7 @@ dap.listeners.before.event_exited.dapui_config = dapui.close
 
 vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint, {})
 vim.keymap.set('n', '<leader>dc', dap.continue, {})
+vim.keymap.set('n', '<leader>dt', dap.terminate, {})
 vim.keymap.set('n', '<leader>n', dap.step_over, {})
 vim.keymap.set('n', '<leader>si', dap.step_into, {})
 vim.keymap.set('n', '<leader>so', dap.step_into, {})
@@ -74,6 +75,7 @@ local function lldb_config(name, default_path)
     cwd = '${workspaceFolder}',
     stopOnEntry = false,
     -- Take the executable via input prompt
+    -- The prompt defaults to the the input default_path relative to the cwd
     program = function()
       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. default_path, 'file')
     end,
@@ -88,15 +90,19 @@ local function lldb_config(name, default_path)
   }
 end
 
--- Setup LLDB adapters for C++, C, and Zig
-dap.configurations.cpp = { lldb_config("C++ exe + Args [CMake]", "build/bin/") }
-dap.configurations.c = { lldb_config("C exe + Args") }
-dap.configurations.zig = { lldb_config("Zig exe + Args", "zig-out/bin/") }
-
--- Setup GDB adapters for C++, C, and Zig
-dap.configurations.cpp = { gdb_config("C++ exe + Args [CMake]", "build/bin/") }
-dap.configurations.c = { gdb_config("C exe + Args") }
-dap.configurations.zig = { gdb_config("Zig exe + Args", "zig-out/bin/") }
+-- Setup LLDB and GDB adapters for C++, C, and Zig
+dap.configurations.cpp = {
+  lldb_config("C++ exe + Args [CMake]", "build/bin/"),
+  gdb_config("C++ exe + Args [CMake]", "build/bin/")
+}
+dap.configurations.c = {
+  lldb_config("C exe + Args"),
+  gdb_config("C exe + Args")
+}
+dap.configurations.zig = {
+  lldb_config("Zig exe + Args", "zig-out/bin/"),
+  gdb_config("Zig exe + Args", "zig-out/bin/")
+}
 
 dap.adapters.markdown = {
   type = "executable",
@@ -108,13 +114,13 @@ dap.adapters.markdown = {
 dap.adapters.mock = dap.adapters.markdown
 
 dap.configurations.markdown = {
-   {
-      type = "mock",
-      request = "launch",
-      name = "mock test",
-      program = "/home/jacob/Codes/slidey/README.md",
-      stopOnEntry = true,
-      debugServer = 4711
-   }
- }
+  {
+    type = "mock",
+    request = "launch",
+    name = "mock test",
+    program = "/home/jacob/Codes/slidey/README.md",
+    stopOnEntry = true,
+    debugServer = 4711
+  },
+}
 
