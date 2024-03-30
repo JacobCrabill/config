@@ -118,6 +118,12 @@ require("nvim-tree").setup({
   on_attach = nvim_tree_on_attach,
 })
 
+-- Setup basic keymaps
+-- Toggle focus, and focus on current buffer in the tree
+local nvim_tree_api = require('nvim-tree.api')
+vim.keymap.set('n', '<C-o>', function() nvim_tree_api.tree.toggle() end, {})
+vim.keymap.set('n', '<C-0>', function() nvim_tree_api.tree.focus() end, {})
+
 -- Open NvimTree when opening NeoVim, if we do the usual 'nvim .'
 local function open_nvim_tree()
   if vim.fn.getcwd() == vim.fn.expand("%") then
