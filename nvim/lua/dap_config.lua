@@ -113,6 +113,7 @@ local function conan_config(name, default_path)
     stopOnEntry = false,
     -- Take the executable via input prompt
     -- The prompt defaults to the the input default_path relative to the cwd
+    -- This function first sources conanrun.sh to setup the environment
     program = function()
       vim.fn.system('. ' .. '${workspaceFolder}' .. '/build/generators/conanrun.sh')
       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. default_path, 'file')
@@ -143,6 +144,8 @@ dap.configurations.zig = {
   gdb_config("Zig exe + Args", "zig-out/bin/")
 }
 
+-- A "mock" debug adapter that "debugs" Markdown files.
+-- Can be useful for testing configs.
 dap.adapters.markdown = {
   type = "executable",
   name = "mockdebug",
@@ -157,7 +160,9 @@ dap.configurations.markdown = {
     type = "mock",
     request = "launch",
     name = "mock test",
-    program = "/home/jacob/Codes/slidey/README.md",
+    program = function()
+      return vim.fn.input('Path to Markdown file: ', vim.fn.getcwd() .. '/', 'file')
+    end,
     stopOnEntry = true,
     debugServer = 4711
   },
