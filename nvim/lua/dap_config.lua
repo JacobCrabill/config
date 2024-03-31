@@ -15,6 +15,16 @@ dap.listeners.before.launch.dapui_config = dapui.open
 dap.listeners.before.event_terminated.dapui_config = dapui.close
 dap.listeners.before.event_exited.dapui_config = dapui.close
 
+-- Get a Telescope list of all DAP configurations
+-- Filter the list by the current filetype
+local function telescope_dap_configs()
+  return telescope.extensions.dap.configurations({
+    language_filter = function(lang)
+      return lang == vim.bo.filetype
+    end
+  })
+end
+
 vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint, {})
 vim.keymap.set('n', '<leader>dc', dap.continue, {})
 vim.keymap.set('n', '<leader>dt', dap.terminate, {})
@@ -24,7 +34,7 @@ vim.keymap.set('n', '<leader>so', dap.step_into, {})
 vim.keymap.set('n', '<F10>', dap.step_over, {})
 vim.keymap.set('n', '<F11>', dap.step_into, {})
 vim.keymap.set('n', '<F12>', dap.step_out, {})
-vim.keymap.set('n', '<leader>td', telescope.extensions.dap.configurations, {})
+vim.keymap.set('n', '<leader>td', telescope_dap_configs, {})
 
 dap.adapters.lldb = {
   type = 'executable',
@@ -40,6 +50,7 @@ dap.adapters.gdb = {
 }
 
 -- Create a DAP Adapter config for GDB
+-- Requires GDB >=14 for built-in DAP support
 local function gdb_config(name, default_path)
   default_path = default_path or ''
   default_path = '/' .. default_path
@@ -90,10 +101,38 @@ local function lldb_config(name, default_path)
   }
 end
 
+-- Create an LLDB + Conan config
+local function conan_config(name, default_path)
+  default_path = default_path or ''
+  default_path = '/' .. default_path
+  return {
+    name = name,
+    type = 'lldb',
+    request = 'launch',
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+    -- Take the executable via input prompt
+    -- The prompt defaults to the the input default_path relative to the cwd
+    program = function()
+      vim.fn.system('. ' .. '${workspaceFolder}' .. '/build/generators/conanrun.sh')
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. default_path, 'file')
+    end,
+    -- Take the arguments list via input prompt
+    args = function()
+      local t = {}
+      for arg in string.gmatch(vim.fn.input('Cmd Arguments: '), "%S+") do
+        table.insert(t, arg)
+      end
+      return t
+    end,
+  }
+end
+
 -- Setup LLDB and GDB adapters for C++, C, and Zig
 dap.configurations.cpp = {
   lldb_config("C++ exe + Args [CMake]", "build/bin/"),
-  gdb_config("C++ exe + Args [CMake]", "build/bin/")
+  gdb_config("C++ exe + Args [CMake]", "build/bin/"),
+  conan_config("Conan exe", "build/bin/")
 }
 dap.configurations.c = {
   lldb_config("C exe + Args"),
