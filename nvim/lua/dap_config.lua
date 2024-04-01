@@ -4,6 +4,10 @@ local dapui = require("dapui")
 local tel_actions_state = require("telescope.actions.state")
 local tel_actions = require("telescope.actions")
 
+-- Set the paths to the available debuggers
+local lldb_bin = '/home/jacob/.local/bin/lldb-vscode'
+local gdb_bin = '/home/jacob/.local/bin/gdb'
+
 require('nvim-dap-virtual-text').setup()
 dapui.setup()
 
@@ -80,6 +84,44 @@ local function conan_picker()
 end
 -- Map the above to the ':DebugConan' user command
 vim.api.nvim_create_user_command('DebugConan', conan_picker, {})
+
+-- Create a Zig + LLDB config
+local function custom_zig_config(exe)
+  return {
+    name = "Custom Zig exe runner",
+    type = 'lldb',
+    request = 'launch',
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+    program = exe,
+    args = function()
+      return vim.split(vim.fn.input('Command Arguments: '), " ")
+    end,
+  }
+end
+
+-- Start a DAP session using the output from the Telescope prompt buffer
+local function start_zig_dap(prompt_bufnr)
+	local selected_entry = tel_actions_state.get_selected_entry()
+  local cmd = selected_entry[1]
+  tel_actions.close(prompt_bufnr)
+	dap.run(custom_zig_config(cmd))
+end
+
+-- Launch a Telescope picker for binary files at <cwc>/build/bin
+local function zig_picker()
+  require("telescope.builtin").find_files({
+    find_command = {'find', vim.fn.getcwd() .. '/zig-out/bin/', '-type', 'f', '-executable'},
+    attach_mappings = function(_, map)
+      map("n", "<cr>", start_zig_dap)
+      map("i", "<cr>", start_zig_dap)
+      return true
+    end,
+  })
+end
+-- Map the above to the ':DebugZig' user command
+vim.api.nvim_create_user_command('DebugZig', zig_picker, {})
+
 --------------------------------------------------------------------------
 
 -- Configure our DAP-related keybindings
@@ -96,13 +138,13 @@ vim.keymap.set('n', '<leader>td', telescope_dap_configs, {})
 
 dap.adapters.lldb = {
   type = 'executable',
-  command = '/usr/bin/lldb-vscode-10', -- adjust as needed, must be absolute path
+  command = lldb_bin,
   name = 'lldb'
 }
 
 dap.adapters.gdb = {
   type = "executable",
-  command = "/home/jacob/.local/bin/gdb",
+  command = gdb_bin,
   args = { "-i", "dap" },
   name = 'gdb'
 }
