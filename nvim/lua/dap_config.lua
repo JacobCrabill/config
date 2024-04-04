@@ -7,6 +7,7 @@ local tel_actions = require("telescope.actions")
 -- Set the paths to the available debuggers
 local lldb_bin = '/home/jacob/.local/bin/lldb-vscode'
 local gdb_bin = '/home/jacob/.local/bin/gdb'
+local node_bin = '/home/jacob/.nvm/versions/node/v20.11.1/bin/node'
 
 require('nvim-dap-virtual-text').setup()
 dapui.setup()
@@ -37,35 +38,45 @@ local function telescope_dap_configs()
   })
 end
 
+-- Helper Function: Prompt for user input for command arguments
+local function prompt_for_args()
+    return vim.split(vim.fn.input('Command Arguments: '), " ")
+end
+
+-- Create a generic DAP config consisting of a name, adapter, and command
+-- Prompts for user input if no args are given
+local function create_config(name, adapter, command, args)
+  args = args or prompt_for_args
+  return {
+    name = name,
+    type = adapter,
+    request = 'launch',
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+    program = command,
+    args = args,
+  }
+end
+
 --------------------------------------------------------------------------
 -- Setup Telescope as a binary picker for Conan-based repos
 -- Show a picker for all executables at <cwd>/build/bin, then run an LLDB
 -- DAP configuration on the chosen binary
+-- The conanrun.sh script is sourced before running the command
 --------------------------------------------------------------------------
 -- Create an LLDB + Conan config
 local function custom_conan_config(build_dir, exe)
-  return {
-    name = "Custom Conan exe runner",
-    type = 'lldb',
-    request = 'launch',
-    cwd = '${workspaceFolder}',
-    stopOnEntry = false,
-    program = function()
+  return create_config("Custom Conan exe runner", 'lldb', function()
       print('Sourcing ' .. build_dir .. '/generators/conanrun.sh')
       vim.fn.system('. ' .. build_dir .. '/generators/conanrun.sh')
       return exe
-    end,
-    -- Take the arguments list via input prompt
-    args = function()
-      return vim.split(vim.fn.input('Command Arguments: '), " ")
-    end,
-  }
+    end
+  )
 end
 
 -- Start a DAP session using the output from the Telescope prompt buffer
 local function start_conan_dap(prompt_bufnr)
-	local selected_entry = tel_actions_state.get_selected_entry()
-  local cmd = selected_entry[1]
+	local cmd = tel_actions_state.get_selected_entry()
   tel_actions.close(prompt_bufnr)
   local build_dir = vim.fn.getcwd() .. '/build' -- TODO: Can I get this from 'cmd' somehow?
 	dap.run(custom_conan_config(build_dir, cmd))
@@ -86,26 +97,11 @@ end
 vim.api.nvim_create_user_command('DebugConan', conan_picker, {})
 
 -- Create a Zig + LLDB config
-local function custom_zig_config(exe)
-  return {
-    name = "Custom Zig exe runner",
-    type = 'lldb',
-    request = 'launch',
-    cwd = '${workspaceFolder}',
-    stopOnEntry = false,
-    program = exe,
-    args = function()
-      return vim.split(vim.fn.input('Command Arguments: '), " ")
-    end,
-  }
-end
-
 -- Start a DAP session using the output from the Telescope prompt buffer
 local function start_zig_dap(prompt_bufnr)
-	local selected_entry = tel_actions_state.get_selected_entry()
-  local cmd = selected_entry[1]
+	local cmd = tel_actions_state.get_selected_entry()[1]
   tel_actions.close(prompt_bufnr)
-	dap.run(custom_zig_config(cmd))
+	dap.run(create_config("Custom Zig exe runner", 'lldb', cmd))
 end
 
 -- Launch a Telescope picker for binary files at <cwc>/build/bin
@@ -136,12 +132,14 @@ vim.keymap.set('n', '<F11>', dap.step_into, {})
 vim.keymap.set('n', '<F12>', dap.step_out, {})
 vim.keymap.set('n', '<leader>td', telescope_dap_configs, {})
 
+-- Setup LLDB
 dap.adapters.lldb = {
   type = 'executable',
   command = lldb_bin,
   name = 'lldb'
 }
 
+-- Setup GDB
 dap.adapters.gdb = {
   type = "executable",
   command = gdb_bin,
@@ -166,13 +164,7 @@ local function gdb_config(name, default_path)
       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. default_path, 'file')
     end,
     -- Take the arguments list via input prompt
-    args = function()
-      local t = {}
-      for arg in string.gmatch(vim.fn.input('Cmd Arguments: '), "%S+") do
-        table.insert(t, arg)
-      end
-      return t
-    end,
+    args = prompt_for_args,
   }
 end
 
@@ -192,13 +184,7 @@ local function lldb_config(name, default_path)
       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. default_path, 'file')
     end,
     -- Take the arguments list via input prompt
-    args = function()
-      local t = {}
-      for arg in string.gmatch(vim.fn.input('Cmd Arguments: '), "%S+") do
-        table.insert(t, arg)
-      end
-      return t
-    end,
+    args = prompt_for_args,
   }
 end
 
@@ -222,13 +208,7 @@ local function conan_config(name, default_path)
       return vim.fn.input('Path to executable: ', bin_path, 'file')
     end,
     -- Take the arguments list via input prompt
-    args = function()
-      local t = {}
-      for arg in string.gmatch(vim.fn.input('Cmd Arguments: '), "%S+") do
-        table.insert(t, arg)
-      end
-      return t
-    end,
+    args = prompt_for_args,
   }
 end
 
@@ -252,9 +232,9 @@ dap.configurations.zig = {
 dap.adapters.markdown = {
   type = "executable",
   name = "mockdebug",
-  command = "/home/jacob/.nvm/versions/node/v20.11.1/bin/node",
+  command = node_bin,
   args = {"./out/debugAdapter.js"},
-  cwd = "/home/jacob/.local/share/nvim/mason/packages/mockdebug"
+  cwd = vim.env.HOME .. "/.local/share/nvim/mason/packages/mockdebug"
 }
 dap.adapters.mock = dap.adapters.markdown
 
