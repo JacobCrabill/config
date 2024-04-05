@@ -28,9 +28,42 @@ local function terminate_session()
   dapui.close()
 end
 
--- Get a Telescope list of all DAP configurations
+-- Try loading a local dap-config file from the current working directory
+-- The file should have the format:
+--     local dap = {}
+--     dap.configurations = {}
+--     dap.configurations.cpp = { { <standard DAP config table> } }
+--     return dap
+-- See the "default" configurations in this file for reference
+local function load_local_config()
+  local conf = vim.fn.getcwd() .. '/dap-config.lua'
+  local f = io.open(conf)
+  if f == nil then
+    vim.print("No dap-config.lua found in current working directory")
+    return
+  end
+  f:close()
+
+  -- Load the configs from the Lua file and append its configurations to
+  -- the global DAP configurations specified here
+  local dap_config = dofile(conf)
+  print("Got a config file at: " .. conf)
+  for lang, configs in pairs(dap_config.configurations) do
+    print("Have configurations for " .. lang)
+    vim.print(configs)
+    for _, c in ipairs(configs) do
+      vim.print(c)
+      table.insert(dap.configurations[lang], c)
+    end
+  end
+end
+vim.api.nvim_create_user_command("LoadDAPConfig", load_local_config, {})
+
+-- Get a Telescope list of all DAP configurations, including any which are
+-- locally defined in a 'dap-config.lua' file
 -- Filter the list by the current filetype
 local function telescope_dap_configs()
+  load_local_config()
   return telescope.extensions.dap.configurations({
     language_filter = function(lang)
       return lang == vim.bo.filetype
