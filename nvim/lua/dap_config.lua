@@ -4,17 +4,29 @@ local dapui = require("dapui")
 local tel_actions_state = require("telescope.actions.state")
 local tel_actions = require("telescope.actions")
 
--- Set the paths to the available debuggers
-local lldb_bin = '/home/jacob/.local/bin/lldb-vscode'
-local gdb_bin = '/home/jacob/.local/bin/gdb'
-local node_bin = '/home/jacob/.nvm/versions/node/v20.11.1/bin/node'
+-- Virtual text plugin - Evaluates locals as virtual text within the buffer
+-- I'm not convinced this is useful for me; set 'enabled = false' to disable
+require('nvim-dap-virtual-text').setup({ enabled = true, commented = true, })
 
-require('nvim-dap-virtual-text').setup()
+-- The main DAP UI - See :help nvim-dap-ui for options
 dapui.setup()
 
 -- Enable Telescope as a configuration picker
+-- We'll configure this below
 local telescope = require('telescope')
 telescope.load_extension('dap')
+
+-- We'll store the default configs in this table for merging with local configs
+local default_configs = { configurations = {}, adapters = {}, }
+
+--------------------------------------------------------------------------
+-- Basic Setup
+--------------------------------------------------------------------------
+
+-- Set the paths to the available debuggers
+local lldb_bin = vim.env.HOME .. '/.local/bin/lldb-vscode'
+local gdb_bin = vim.env.HOME .. '/.local/bin/gdb'
+local node_bin = vim.env.HOME .. '/.nvm/versions/node/v20.11.1/bin/node'
 
 -- Automatically open/close the DAP UI on session start/end
 dap.listeners.before.attach.dapui_config = dapui.open
@@ -22,21 +34,73 @@ dap.listeners.before.launch.dapui_config = dapui.open
 dap.listeners.before.event_terminated.dapui_config = dapui.close
 dap.listeners.before.event_exited.dapui_config = dapui.close
 
+--------------------------------------------------------------------------
+-- Helper Functions
+--------------------------------------------------------------------------
+
 -- Terminate the debug session and close DAP UI
 local function terminate_session()
   dap.terminate()
   dapui.close()
 end
 
--- Try loading a local dap-config file from the current working directory
--- The file should have the format:
---     local dap = {}
---     dap.configurations = {}
---     dap.configurations.cpp = { { <standard DAP config table> } }
---     return dap
--- See the "default" configurations in this file for reference
-local function load_local_config()
+-- Create a "deep" copy of the given config
+-- This allows configs to be added/removed from the new table
+-- without modifying the original
+local function copy_dap_config(dap_config)
+  local copy = { configurations = {}, adapters = {}, }
+  for lang, configs in pairs(dap_config.configurations) do
+    copy.configurations[lang] = {}
+    for _, config in ipairs(configs) do
+      table.insert(copy.configurations[lang], config)
+    end
+  end
+  for name, config in pairs(dap_config.adapters) do
+    copy.adapters[name] = config
+  end
+  return copy
+end
+
+-- Create a (placeholder) local dap-config.lua file from the current global config
+-- Any configurations and adapters placed in this file will be shown in the Telescope
+-- picker in addition to those defined in this file
+local function create_starter_local_config()
   local conf = vim.fn.getcwd() .. '/dap-config.lua'
+  local f = io.open(conf, 'w')
+  if f == nil then
+    print("ERROR: Could not create file: " .. conf)
+    return
+  end
+
+  local dap_config = [[--Placehodler config - edit as needed
+local dap = {
+  configurations = {
+    cpp = {
+      -- List of config tables here
+      -- Each config needs at least a name, type, and program
+      -- Optional entries are args, stopOnEntry, and cwd
+      -- Example: cpp = { { name = "test", type = "lldb", program = "build/bin/foo" }, }
+    },
+  },
+  adapters = {
+    -- List of adapter tables here
+    -- The name of each table becomes the 'type' used in the config
+    -- Example: lldb = { name = 'lldb', type = 'executable', command = '/path/to/lldb-vscode' }
+  },
+}
+return dap
+]]
+  f:write(dap_config)
+  f:close()
+end
+vim.api.nvim_create_user_command("CreateLocalDAPConfig", create_starter_local_config, {})
+
+-- Try loading a local "dap-config.lua" file
+-- If no (absolute) path is give, then load from the current working directory
+-- A template file can be created with the ':CreateLocalDAPConfig' command above
+-- See the "default" configurations in this file for reference
+local function load_local_config(config_path)
+  local conf = config_path or vim.fn.getcwd() .. '/dap-config.lua'
   local f = io.open(conf)
   if f == nil then
     vim.print("No dap-config.lua found in current working directory")
@@ -46,14 +110,34 @@ local function load_local_config()
 
   -- Load the configs from the Lua file and append its configurations to
   -- the global DAP configurations specified here
+  print("Loading dap-config file at: " .. conf)
   local dap_config = dofile(conf)
-  print("Got a config file at: " .. conf)
-  for lang, configs in pairs(dap_config.configurations) do
-    print("Have configurations for " .. lang)
-    vim.print(configs)
-    for _, c in ipairs(configs) do
-      vim.print(c)
-      table.insert(dap.configurations[lang], c)
+  if dap_config == nil then
+    print("ERROR: file " .. conf .. " did not return a config table")
+    return
+  end
+
+  -- Reset our DAP config table to the defaults
+  local defaults = copy_dap_config(default_configs)
+  dap.configurations = defaults.configurations
+  dap.adapters = defaults.adapters
+
+  -- Load debug configurations
+  if dap_config.configurations ~= nil then
+    -- Append the local configurations into the table
+    for lang, configs in pairs(dap_config.configurations) do
+      for _, c in ipairs(configs) do
+        vim.print(c)
+        table.insert(dap.configurations[lang], c)
+      end
+    end
+  end
+
+  -- Load adapter definitions
+  if dap_config.adapters ~= nil then
+    -- Append the local adapter configs into the table
+    for name, config in pairs(dap_config.adapters) do
+      dap.adapters[name] = config
     end
   end
 end
@@ -73,7 +157,19 @@ end
 
 -- Helper Function: Prompt for user input for command arguments
 local function prompt_for_args()
-    return vim.split(vim.fn.input('Command Arguments: '), " ")
+  return vim.split(vim.fn.input('Command Arguments: '), " ")
+end
+
+-- Helper Function: Prompt for binary to debug
+-- The prompt defaults to the given path, e.g.: "vim.fn.getcwd() .. '/build/bin/'"
+local function prompt_for_binary(default_path)
+  return function()
+    return vim.fn.input({
+      prompt = 'Path to executable: ',
+      default = vim.fn.getcwd() .. default_path,
+      copmletion ='file',
+    })
+  end
 end
 
 -- Create a generic DAP config consisting of a name, adapter, and command
@@ -111,11 +207,11 @@ end
 local function start_conan_dap(prompt_bufnr)
 	local cmd = tel_actions_state.get_selected_entry()
   tel_actions.close(prompt_bufnr)
-  local build_dir = vim.fn.getcwd() .. '/build' -- TODO: Can I get this from 'cmd' somehow?
+  local build_dir = vim.fn.getcwd() .. '/build'
 	dap.run(custom_conan_config(build_dir, cmd))
 end
 
--- Launch a Telescope picker for binary files at <cwc>/build/bin
+-- Launch a Telescope picker for binary files at <cwd>/build/bin
 local function conan_picker()
   require("telescope.builtin").find_files({
     find_command = {'find', vim.fn.getcwd() .. '/build/bin/', '-type', 'f', '-executable'},
@@ -152,6 +248,8 @@ end
 vim.api.nvim_create_user_command('DebugZig', zig_picker, {})
 
 --------------------------------------------------------------------------
+-- Keybindings & Customization
+--------------------------------------------------------------------------
 
 -- Configure our DAP-related keybindings
 vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint, {})
@@ -160,10 +258,19 @@ vim.keymap.set('n', '<leader>dt', terminate_session, {})
 vim.keymap.set('n', '<leader>n', dap.step_over, {})
 vim.keymap.set('n', '<leader>si', dap.step_into, {})
 vim.keymap.set('n', '<leader>so', dap.step_out, {})
+vim.keymap.set('n', '<F5>', dap.continue, {})
 vim.keymap.set('n', '<F10>', dap.step_over, {})
 vim.keymap.set('n', '<F11>', dap.step_into, {})
 vim.keymap.set('n', '<F12>', dap.step_out, {})
+vim.keymap.set('n', '<leader>dl', dap.run_last, {})
 vim.keymap.set('n', '<leader>td', telescope_dap_configs, {})
+
+-- Change the breakpoint marker to a big red circle instead of a 'B'
+vim.fn.sign_define('DapBreakpoint', {text='🛑', texthl='', linehl='', numhl=''})
+
+--------------------------------------------------------------------------
+-- Setup Adapters (Debuggers which support the Debug Adapter Protocol)
+--------------------------------------------------------------------------
 
 -- Setup LLDB
 dap.adapters.lldb = {
@@ -180,6 +287,10 @@ dap.adapters.gdb = {
   name = 'gdb'
 }
 
+--------------------------------------------------------------------------
+-- Configurations
+--------------------------------------------------------------------------
+
 -- Create a DAP Adapter config for GDB
 -- Requires GDB >=14 for built-in DAP support
 local function gdb_config(name, default_path)
@@ -192,11 +303,8 @@ local function gdb_config(name, default_path)
     request = 'launch',
     cwd = '${workspaceFolder}',
     stopOnEntry = false,
-    -- Take the executable via input prompt
-    program = function()
-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. default_path, 'file')
-    end,
-    -- Take the arguments list via input prompt
+    -- Take the executable and args via input prompt
+    program = prompt_for_binary(bin_path),
     args = prompt_for_args,
   }
 end
@@ -211,12 +319,8 @@ local function lldb_config(name, default_path)
     request = 'launch',
     cwd = '${workspaceFolder}',
     stopOnEntry = false,
-    -- Take the executable via input prompt
-    -- The prompt defaults to the the input default_path relative to the cwd
-    program = function()
-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. default_path, 'file')
-    end,
-    -- Take the arguments list via input prompt
+    -- Take the executable and args via input prompt
+    program = prompt_for_binary(default_path),
     args = prompt_for_args,
   }
 end
@@ -238,7 +342,7 @@ local function conan_config(name, default_path)
     program = function()
       print('Sourcing ' .. bin_path .. '/../generators/conanrun.sh')
       vim.fn.system('. ' .. bin_path .. '/../generators/conanrun.sh')
-      return vim.fn.input('Path to executable: ', bin_path, 'file')
+      return prompt_for_binary(bin_path)()
     end,
     -- Take the arguments list via input prompt
     args = prompt_for_args,
@@ -261,10 +365,10 @@ dap.configurations.zig = {
 }
 
 -- A "mock" debug adapter that "debugs" Markdown files.
--- Can be useful for testing configs.
+-- Could be useful for testing configs if it ever works.
 dap.adapters.markdown = {
   type = "executable",
-  name = "mockdebug",
+  name = "markdown",
   command = node_bin,
   args = {"./out/debugAdapter.js"},
   cwd = vim.env.HOME .. "/.local/share/nvim/mason/packages/mockdebug"
@@ -273,14 +377,21 @@ dap.adapters.mock = dap.adapters.markdown
 
 dap.configurations.markdown = {
   {
-    type = "mock",
+    type = "markdown",
     request = "launch",
     name = "mock test",
     program = function()
-      return vim.fn.input('Path to Markdown file: ', vim.fn.getcwd() .. '/', 'file')
+      return vim.fn.input({
+        prompt = 'Path to Markdown file: ',
+        default = vim.fn.getcwd() .. '/',
+        completion = 'file',
+      })
     end,
     stopOnEntry = true,
     debugServer = 4711
   },
 }
 
+-- Create a deep copy of the configurations defined above
+-- This allows us to reset the dap config tables to these defaults later
+default_configs = copy_dap_config(dap)
