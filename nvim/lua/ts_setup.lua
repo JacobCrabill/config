@@ -1,10 +1,9 @@
 require('nvim-treesitter.configs').setup {
-  ensure_installed = {"c", "cpp", "rust", "toml", "zig", "lua", "vim", "python", "kotlin", "bash", "go"},
+  ensure_installed = {"c", "cpp", "rust", "toml", "zig", "lua", "vim", "python", "bash", "go", "yaml"},
   highlight = {
     enable = true,
     custom_captures = {
-      -- Highlight the @foo.bar capture group with the "Identifier" highlight group.
-      ["line_comment"] = "Comment",
+      -- e.g. Highlight [@foo.bar] capture group with the "Identifier" highlight group.
     },
     -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).

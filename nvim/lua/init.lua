@@ -1,5 +1,8 @@
--- Enable full color and highlighting support
-vim.opt.termguicolors = true
+-- Basic setup options
+require('options')
+
+-- Colorschemes and general style config
+require('style')
 
 -- Keybindings
 require('maps')
@@ -31,8 +34,8 @@ require('ts_setup')
 -- DAP (Debug Adapter Protocol)
 require('dap_config')
 
--- Misc. Style Config
-require('style')
+-- Other odds and ends
+require('misc')
 
 -- Gitsigns: Git status tracking symbols
--- require('gitsigns_setup.lua')
+-- require('gitsigns_setup')

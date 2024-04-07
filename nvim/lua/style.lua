@@ -1,11 +1,10 @@
---- Glow (Markdown preview) config
-require('glow').setup({
-  style = "dark",
-  width = 150,
-})
+-- Enable transparent background (Or rather, use terminal's background)
+vim.api.nvim_set_hl(0, 'Normal', { bg=0 })
+vim.api.nvim_set_hl(0, 'NonText', { bg=0 })
+vim.opt.background = 'dark'
 
 -- My custom color definitions
-my_colors = {
+local my_colors = {
   comment_pink = "#ee55a0",
   comment_coral = "#d46398",
   purple = "#C792EA",
@@ -110,6 +109,5 @@ elseif vim.g.my_scheme == "tokyonight" then
   vim.cmd('colorscheme tokyonight')
 
 end
-
 
 -- vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
