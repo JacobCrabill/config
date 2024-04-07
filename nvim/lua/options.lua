@@ -10,6 +10,7 @@ vim.opt.mouse = 'a'
 vim.opt.relativenumber = true
 vim.opt.updatetime = 80
 vim.opt.wrap = false
+vim.opt.showmode = false
 
 -- Use case insensitive search, except when using capital letters
 vim.opt.ignorecase = true
@@ -20,5 +21,16 @@ vim.opt.tabstop     = 2    -- Size of existing tab characters
 vim.opt.softtabstop = 2    -- Size of a new tab while editing
 vim.opt.shiftwidth  = 2    -- when indenting with '>', use 2 spaces width
 
--- Whitespace characters to make visibile when in 'vim.opt.list'
-vim.opt.listchars = { tab = '>-' }
+-- Whitespace characters to make visibile
+vim.opt.list = true
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+
+-- Minimal number of screen lines to keep above and below the cursor
+vim.opt.scrolloff = 10
+
+-- Fully share clipboards between vim and system
+-- vim.opt.clipboard = 'unnamedplus'
+
+-- Decrease mapped sequence wait time
+-- Displays which-key popup sooner
+vim.opt.timeoutlen = 250
