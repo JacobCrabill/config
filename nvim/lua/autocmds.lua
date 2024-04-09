@@ -27,7 +27,7 @@ vim.api.nvim_create_autocmd({'BufNewFile', 'BufRead'}, {
 })
 
 -- enable syntax highligting for EOSLang files
-vim.api.nvim_create_autocmd({'BufNewFile', 'BufNewFile'}, {
+vim.api.nvim_create_autocmd({'BufNewFile', 'BufRead'}, {
   pattern = { '*.eos' },
   group = 'OnOpen',
   callback = function()
