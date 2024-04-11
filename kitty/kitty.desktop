@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=kitty
+GenericName=Terminal emulator
+Comment=Fast, feature-rich, GPU based terminal
+TryExec=kitty -o allow_remote_control=yes --single-instance --listen-on unix:@mykitty
+Exec=kitty -o allow_remote_control=yes --single-instance --listen-on unix:@mykitty
+Icon=kitty
+Categories=System;TerminalEmulator;
