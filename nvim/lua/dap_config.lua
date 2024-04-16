@@ -6,7 +6,7 @@ local tel_actions = require("telescope.actions")
 
 -- Virtual text plugin - Evaluates locals as virtual text within the buffer
 -- I'm not convinced this is useful for me; set 'enabled = false' to disable
-require('nvim-dap-virtual-text').setup({ enabled = true, commented = true, })
+require('nvim-dap-virtual-text').setup({ enabled = false, commented = true, })
 
 -- The main DAP UI - See :help nvim-dap-ui for options
 dapui.setup()
@@ -25,8 +25,14 @@ local default_configs = { configurations = {}, adapters = {}, }
 
 -- Set the paths to the available debuggers
 local lldb_bin = vim.env.HOME .. '/.local/bin/lldb-vscode'
-local gdb_bin = vim.env.HOME .. '/.local/bin/gdb'
 local node_bin = vim.env.HOME .. '/.nvm/versions/node/v20.11.1/bin/node'
+
+-- NOTE: GDB MUST be built with DAP support
+-- To do so, build a gdb version >= 14.0 and make sure to configure as:
+--   $ ./configure --prefix=$HOME/.local/ --with-python=/usr/bin/python3
+-- Be sure to install libgmp-dev, libmpfr-dev, and python3-dev before
+-- running configure
+local gdb_bin = vim.env.HOME .. '/.local/bin/gdb'
 
 -- Automatically open/close the DAP UI on session start/end
 dap.listeners.before.attach.dapui_config = dapui.open
@@ -79,7 +85,7 @@ local dap = {
       -- List of config tables here
       -- Each config needs at least a name, type, and program
       -- Optional entries are args, stopOnEntry, and cwd
-      -- Example: cpp = { { name = "test", type = "lldb", program = "build/bin/foo" }, }
+      -- Example: cpp = { { name = "test", type = "lldb", request = "launch", program = "build/bin/foo" }, }
     },
   },
   adapters = {
@@ -99,11 +105,11 @@ vim.api.nvim_create_user_command("CreateLocalDAPConfig", create_starter_local_co
 -- If no (absolute) path is give, then load from the current working directory
 -- A template file can be created with the ':CreateLocalDAPConfig' command above
 -- See the "default" configurations in this file for reference
-local function load_local_config(config_path)
-  local conf = config_path or vim.fn.getcwd() .. '/dap-config.lua'
+local function load_local_config()
+  local conf = vim.fn.getcwd() .. '/dap-config.lua'
   local f = io.open(conf)
   if f == nil then
-    vim.print("No dap-config.lua found in current working directory")
+    print("No dap-config.lua found in current working directory")
     return
   end
   f:close()
@@ -127,10 +133,11 @@ local function load_local_config(config_path)
     -- Append the local configurations into the table
     for lang, configs in pairs(dap_config.configurations) do
       for _, c in ipairs(configs) do
-        vim.print(c)
         table.insert(dap.configurations[lang], c)
       end
     end
+  else
+    print("No configurations found in file")
   end
 
   -- Load adapter definitions
@@ -139,6 +146,8 @@ local function load_local_config(config_path)
     for name, config in pairs(dap_config.adapters) do
       dap.adapters[name] = config
     end
+  else
+    print("No adapters found in file")
   end
 end
 vim.api.nvim_create_user_command("LoadDAPConfig", load_local_config, {})
@@ -276,7 +285,7 @@ vim.fn.sign_define('DapBreakpoint', {text='🛑', texthl='', linehl='', numhl=''
 dap.adapters.lldb = {
   type = 'executable',
   command = lldb_bin,
-  name = 'lldb'
+  name = 'lldb',
 }
 
 -- Setup GDB

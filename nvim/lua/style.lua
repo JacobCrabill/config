@@ -14,6 +14,7 @@ local my_colors = {
   coral = "#FF9CAC",
   lime = "#BFD982",
   baby_pink = "#D96293",
+  lime_green = "#99EE00",
 }
 
 -- OneDark Color Scheme config
@@ -82,6 +83,7 @@ require("material").setup({
   custom_colors = function(colors)
     colors.syntax.comments = my_colors.baby_pink
     colors.editor.line_numbers = my_colors.purple_grey
+    colors.editor.cursor = my_colors.lime_green
   end
 })
 

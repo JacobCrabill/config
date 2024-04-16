@@ -16,8 +16,22 @@ end
 vim.keymap.set('n', '<A-S-0>', openConfig, {})
 
 -- Re-source the NeoVim config
+-- Note that since Lua caches require()'d modules, we have to clear them
+-- in order to reload our config
 local function sourceConfig()
+  print('~~ Reloading Neovim config ~~')
+  package.loaded['options'] = false
+  package.loaded['maps'] = false
+  package.loaded['dap_config'] = false
+  package.loaded['autocmds'] = false
+  package.loaded['style'] = false
+  package.loaded['cmp_setup'] = false
+  package.loaded['lualine_setup'] = false
+  package.loaded['lsp_setup'] = false
+  package.loaded['ts_setup'] = false
+  package.loaded['misc'] = false
   vim.cmd('source ' .. nvimrc .. '/init.vim')
+  print('~~ Neovim config reloaded ~~')
 end
 vim.keymap.set('n', '<A-0>', sourceConfig, {})
 
@@ -34,6 +48,7 @@ vim.keymap.set('v', 'p', [["_dP]], { noremap = true })
 
 -- Exit insert mode with my right hand w/o leaving home row
 vim.keymap.set('i', ',,', '<ESC>', {})
+vim.keymap.set('n', ',,', ':<c-u><C-r>=b:VM_Selection.Vars.noh<CR>call vm#reset()<cr>', { noremap=true, silent=true }) -- not perfect; not sure what's missing
 
 -- Map <C-L> (redraw screen) to also turn off search highlights
 -- until the next search

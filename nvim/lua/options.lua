@@ -7,8 +7,9 @@ vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
 vim.opt.cursorline = true
 vim.opt.cursorcolumn = false
 vim.opt.mouse = 'a'
+vim.opt.number = true
 vim.opt.relativenumber = true
-vim.opt.updatetime = 80
+vim.opt.updatetime = 100
 vim.opt.wrap = false
 vim.opt.showmode = false
 
