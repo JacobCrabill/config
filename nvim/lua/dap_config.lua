@@ -292,7 +292,7 @@ dap.adapters.lldb = {
 dap.adapters.gdb = {
   type = "executable",
   command = gdb_bin,
-  args = { "-i", "dap" },
+  args = { "-i", "dap", "-iex", "set auto-load safe-path " .. vim.fn.getcwd() },
   name = 'gdb'
 }
 
