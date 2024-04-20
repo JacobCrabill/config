@@ -6,7 +6,7 @@ local tel_actions = require("telescope.actions")
 
 -- Virtual text plugin - Evaluates locals as virtual text within the buffer
 -- I'm not convinced this is useful for me; set 'enabled = false' to disable
-require('nvim-dap-virtual-text').setup({ enabled = false, commented = true, })
+-- require('nvim-dap-virtual-text').setup({ enabled = false, commented = true, })
 
 -- The main DAP UI - See :help nvim-dap-ui for options
 dapui.setup()
@@ -19,19 +19,18 @@ telescope.load_extension('dap')
 -- We'll store the default configs in this table for merging with local configs
 local default_configs = { configurations = {}, adapters = {}, }
 
---------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Basic Setup
---------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 -- Set the paths to the available debuggers
+-- NOTE: Normal LLDB does NOT support DAP; instead, you must use 'lldb-vscode'
 local lldb_bin = vim.env.HOME .. '/.local/bin/lldb-vscode'
-local node_bin = vim.env.HOME .. '/.nvm/versions/node/v20.11.1/bin/node'
 
 -- NOTE: GDB MUST be built with DAP support
 -- To do so, build a gdb version >= 14.0 and make sure to configure as:
 --   $ ./configure --prefix=$HOME/.local/ --with-python=/usr/bin/python3
--- Be sure to install libgmp-dev, libmpfr-dev, and python3-dev before
--- running configure
+-- Be sure to install libgmp-dev, libmpfr-dev, and python3-dev before running ./configure
 local gdb_bin = vim.env.HOME .. '/.local/bin/gdb'
 
 -- Automatically open/close the DAP UI on session start/end
@@ -40,9 +39,9 @@ dap.listeners.before.launch.dapui_config = dapui.open
 dap.listeners.before.event_terminated.dapui_config = dapui.close
 dap.listeners.before.event_exited.dapui_config = dapui.close
 
---------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Helper Functions
---------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 -- Terminate the debug session and close DAP UI
 local function terminate_session()
@@ -67,9 +66,12 @@ local function copy_dap_config(dap_config)
   return copy
 end
 
+-----------------------------------------------------------------------------------------
 -- Create a (placeholder) local dap-config.lua file from the current global config
 -- Any configurations and adapters placed in this file will be shown in the Telescope
 -- picker in addition to those defined in this file
+-- See the bottom of this file for a complete example config file
+-----------------------------------------------------------------------------------------
 local function create_starter_local_config()
   local conf = vim.fn.getcwd() .. '/dap-config.lua'
   local f = io.open(conf, 'w')
@@ -85,7 +87,13 @@ local dap = {
       -- List of config tables here
       -- Each config needs at least a name, type, and program
       -- Optional entries are args, stopOnEntry, and cwd
-      -- Example: cpp = { { name = "test", type = "lldb", request = "launch", program = "build/bin/foo" }, }
+      -- Example:
+      {
+        name = "test",
+        type = "lldb",
+        request = "launch",
+        program = "build/bin/foo",
+      },
     },
   },
   adapters = {
@@ -101,10 +109,12 @@ return dap
 end
 vim.api.nvim_create_user_command("CreateLocalDAPConfig", create_starter_local_config, {})
 
+-----------------------------------------------------------------------------------------
 -- Try loading a local "dap-config.lua" file
 -- If no (absolute) path is give, then load from the current working directory
 -- A template file can be created with the ':CreateLocalDAPConfig' command above
 -- See the "default" configurations in this file for reference
+-----------------------------------------------------------------------------------------
 local function load_local_config()
   local conf = vim.fn.getcwd() .. '/dap-config.lua'
   local f = io.open(conf)
@@ -196,50 +206,38 @@ local function create_config(name, adapter, command, args)
   }
 end
 
---------------------------------------------------------------------------
--- Setup Telescope as a binary picker for Conan-based repos
--- Show a picker for all executables at <cwd>/build/bin, then run an LLDB
--- DAP configuration on the chosen binary
--- The conanrun.sh script is sourced before running the command
---------------------------------------------------------------------------
--- Create an LLDB + Conan config
-local function custom_conan_config(build_dir, exe)
-  return create_config("Custom Conan exe runner", 'lldb', function()
-      print('Sourcing ' .. build_dir .. '/generators/conanrun.sh')
-      vim.fn.system('. ' .. build_dir .. '/generators/conanrun.sh')
-      return exe
-    end
-  )
-end
-
+-----------------------------------------------------------------------------------------
+-- Setup Telescope as a binary picker for CMake-based repos
+-- Show a picker for all executables at <cwd>/build/bin, then run an LLDB DAP
+-- configuration on the chosen binary.
+-----------------------------------------------------------------------------------------
 -- Start a DAP session using the output from the Telescope prompt buffer
-local function start_conan_dap(prompt_bufnr)
-	local cmd = tel_actions_state.get_selected_entry()
+local function start_cmake_dap(prompt_bufnr)
+  local cmd = tel_actions_state.get_selected_entry()[1]
   tel_actions.close(prompt_bufnr)
-  local build_dir = vim.fn.getcwd() .. '/build'
-	dap.run(custom_conan_config(build_dir, cmd))
+  dap.run(create_config("Custom CMake exe runner", 'lldb', cmd))
 end
 
 -- Launch a Telescope picker for binary files at <cwd>/build/bin
-local function conan_picker()
+local function cmake_binary_picker()
   require("telescope.builtin").find_files({
     find_command = {'find', vim.fn.getcwd() .. '/build/bin/', '-type', 'f', '-executable'},
     attach_mappings = function(_, map)
-      map("n", "<cr>", start_conan_dap)
-      map("i", "<cr>", start_conan_dap)
+      map("n", "<cr>", start_cmake_dap)
+      map("i", "<cr>", start_cmake_dap)
       return true
     end,
   })
 end
 -- Map the above to the ':DebugConan' user command
-vim.api.nvim_create_user_command('DebugConan', conan_picker, {})
+vim.api.nvim_create_user_command('DebugConan', cmake_binary_picker, {})
 
 -- Create a Zig + LLDB config
 -- Start a DAP session using the output from the Telescope prompt buffer
 local function start_zig_dap(prompt_bufnr)
-	local cmd = tel_actions_state.get_selected_entry()[1]
+  local cmd = tel_actions_state.get_selected_entry()[1]
   tel_actions.close(prompt_bufnr)
-	dap.run(create_config("Custom Zig exe runner", 'lldb', cmd))
+  dap.run(create_config("Custom Zig exe runner", 'lldb', cmd))
 end
 
 -- Launch a Telescope picker for binary files at <cwc>/build/bin
@@ -304,27 +302,10 @@ dap.adapters.gdb = {
 -- Requires GDB >=14 for built-in DAP support
 local function gdb_config(name, default_path)
   default_path = default_path or ''
-  default_path = '/' .. default_path
-  local bin_path = vim.fn.getcwd() .. default_path
+  default_path = vim.fn.getcwd() .. '/' .. default_path
   return {
     name = name,
     type = 'gdb',
-    request = 'launch',
-    cwd = '${workspaceFolder}',
-    stopOnEntry = false,
-    -- Take the executable and args via input prompt
-    program = prompt_for_binary(bin_path),
-    args = prompt_for_args,
-  }
-end
-
--- Create a DAP Adapter config for LLDB
-local function lldb_config(name, default_path)
-  default_path = default_path or ''
-  default_path = '/' .. default_path
-  return {
-    name = name,
-    type = 'lldb',
     request = 'launch',
     cwd = '${workspaceFolder}',
     stopOnEntry = false,
@@ -334,73 +315,94 @@ local function lldb_config(name, default_path)
   }
 end
 
--- Create an LLDB + Conan config
-local function conan_config(name, default_path)
+-- Create a DAP Adapter config for LLDB
+local function lldb_config(name, default_path)
   default_path = default_path or ''
-  default_path = '/' .. default_path
-  local bin_path = vim.fn.getcwd() .. default_path
+  default_path = vim.fn.getcwd() .. default_path
   return {
     name = name,
     type = 'lldb',
     request = 'launch',
     cwd = '${workspaceFolder}',
     stopOnEntry = false,
-    -- Take the executable via input prompt
+    -- Take the executable and args via input prompt
     -- The prompt defaults to the the input default_path relative to the cwd
-    -- This function first sources conanrun.sh to setup the environment
-    program = function()
-      print('Sourcing ' .. bin_path .. '/../generators/conanrun.sh')
-      vim.fn.system('. ' .. bin_path .. '/../generators/conanrun.sh')
-      return prompt_for_binary(bin_path)()
-    end,
-    -- Take the arguments list via input prompt
+    program = prompt_for_binary(default_path),
     args = prompt_for_args,
   }
 end
 
 -- Setup LLDB and GDB adapters for C++, C, and Zig
 dap.configurations.cpp = {
-  lldb_config("C++ exe + Args [CMake]", "build/bin/"),
-  conan_config("Conan exe", "build/bin/"),
+  lldb_config("[CMake] C++ exe + Args", "build/bin/"),
+  gdb_config("[CMake] C++ exe + Args", "build/bin/"),
 }
 dap.configurations.c = {
-  lldb_config("C exe + Args"),
-  gdb_config("C exe + Args"),
-  conan_config("Conan exe", "build/bin/")
+  lldb_config("[C] exe + Args"),
+  gdb_config("[C] exe + Args"),
 }
 dap.configurations.zig = {
-  lldb_config("Zig exe + Args", "zig-out/bin/"),
-  gdb_config("Zig exe + Args", "zig-out/bin/")
-}
-
--- A "mock" debug adapter that "debugs" Markdown files.
--- Could be useful for testing configs if it ever works.
-dap.adapters.markdown = {
-  type = "executable",
-  name = "markdown",
-  command = node_bin,
-  args = {"./out/debugAdapter.js"},
-  cwd = vim.env.HOME .. "/.local/share/nvim/mason/packages/mockdebug"
-}
-dap.adapters.mock = dap.adapters.markdown
-
-dap.configurations.markdown = {
-  {
-    type = "markdown",
-    request = "launch",
-    name = "mock test",
-    program = function()
-      return vim.fn.input({
-        prompt = 'Path to Markdown file: ',
-        default = vim.fn.getcwd() .. '/',
-        completion = 'file',
-      })
-    end,
-    stopOnEntry = true,
-    debugServer = 4711
-  },
+  lldb_config("[Zig] exe + Args", "zig-out/bin/"),
+  gdb_config("[Zig] exe + Args", "zig-out/bin/")
 }
 
 -- Create a deep copy of the configurations defined above
 -- This allows us to reset the dap config tables to these defaults later
 default_configs = copy_dap_config(dap)
+
+--------------------------------------------------------------------------------
+-- Example project-specific 'dap-config.lua' file
+-- The contents here would be placed in /path/to/project/dap-config.lua
+--------------------------------------------------------------------------------
+--  -- Create a .gdbinit file that sets up the desired dnvironment variables
+--  local function setup_gdbinit(custom_env, cwd)
+--    local gdbinit = cwd or vim.fn.getcwd()
+--    gdbinit = gdbinit .. '/.gdbinit'
+--    local f = io.open(gdbinit, 'w')
+--    if f ~= nil then
+--      print('Opened file ' .. gdbinit .. ' for storing environment')
+--      for key, value in pairs(custom_env) do
+--        f:write('set env ' .. key .. '=\"' .. value .. '\"\n')
+--      end
+--      f:close()
+--    else
+--      error("Unable to open file '" .. gdbinit .. ".gdbinit' for editing")
+--    end
+--  end
+--
+--  return {
+--    configurations = {
+--      cpp = {
+--        {
+--          name = "My Test Executable with LLDB",
+--          type = 'lldb',
+--          request = 'launch',
+--          cwd = '${workspaceFolder}/build/',
+--          stopOnEntry = false,
+--          program = 'bin/my_test',
+--          args = { '-a', '-b', '-o', 'foo.out' },
+--        },
+--        {
+--          name = "My Test Executable with GDB + Custom env",
+--          type = 'gdb',
+--          request = 'launch',
+--          cwd = '${workspaceFolder}',
+--          stopOnEntry = false,
+--          program = function()
+--            -- Specify any desired environment variables
+--            local custom_env = {
+--              LD_LIBRARY_PATH = "/home/jacob/.local/bin/",
+--              FOO_ENV = "Hello, World! Welcome to the env!",
+--            }
+--            setup_gdbinit(custom_env)
+--            -- The executable to debug
+--            return 'build/bin/my_test'
+--          end,
+--          args = { '-a', '-b', '-o', 'foo.out' },
+--        },
+--      },
+--    },
+--
+--    adapters = {}
+--  }
+--------------------------------------------------------------------------------
