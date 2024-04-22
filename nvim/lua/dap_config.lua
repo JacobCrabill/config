@@ -89,10 +89,12 @@ local dap = {
       -- Optional entries are args, stopOnEntry, and cwd
       -- Example:
       {
-        name = "test",
-        type = "lldb",
-        request = "launch",
-        program = "build/bin/foo",
+        name = 'foo',
+        type = 'gdb',
+        request = 'launch',
+        cwd = '${workspaceFolder}',
+        program = 'build/bin/foo',
+        args = {},
       },
     },
   },
@@ -110,8 +112,7 @@ end
 vim.api.nvim_create_user_command("CreateLocalDAPConfig", create_starter_local_config, {})
 
 -----------------------------------------------------------------------------------------
--- Try loading a local "dap-config.lua" file
--- If no (absolute) path is give, then load from the current working directory
+-- Try loading a local "dap-config.lua" file from the current working directory
 -- A template file can be created with the ':CreateLocalDAPConfig' command above
 -- See the "default" configurations in this file for reference
 -----------------------------------------------------------------------------------------
@@ -161,6 +162,7 @@ local function load_local_config()
   end
 end
 vim.api.nvim_create_user_command("LoadDAPConfig", load_local_config, {})
+vim.api.nvim_create_user_command("ShowDAPConfigs", function() vim.print(dap.configurations) end, {})
 
 -- Get a Telescope list of all DAP configurations, including any which are
 -- locally defined in a 'dap-config.lua' file
@@ -230,7 +232,7 @@ local function cmake_binary_picker()
   })
 end
 -- Map the above to the ':DebugConan' user command
-vim.api.nvim_create_user_command('DebugConan', cmake_binary_picker, {})
+vim.api.nvim_create_user_command('DebugCMake', cmake_binary_picker, {})
 
 -- Create a Zig + LLDB config
 -- Start a DAP session using the output from the Telescope prompt buffer
