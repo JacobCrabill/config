@@ -16,6 +16,13 @@ mouse-scroll-multiplier = 0.5
 # ==============================================================================
 # Style Configuration
 # ------------------------------------------------------------------------------
+background-opacity = 0.80
+# Location of the tabs - 'left' and 'right' are unsupported
+# See Window.zig:#L280
+# Adwaita TabBar widget - apparently Gnome controls the styling? Bummer.
+gtk-tabs-location = bottom
+# Enable/Disable Adwaita
+gtk-adwaita = true
 
 # ------------------------------------------------------------------------------
 # Fonts
@@ -34,11 +41,11 @@ font-size = 13
 # theme = OneHalfLight
 # Dark Themes
 # theme = BlulocoDark
-theme = catppuccin-frappe
+# theme = catppuccin-frappe
 # theme = Chester
 # theme = OneHalfDark
 # theme = PaleNightHC
-# theme = Whimsy
+theme = Whimsy
 
 # ==============================================================================
 # KEYBINDINGS
@@ -95,9 +102,9 @@ keybind = ctrl+shift+m=toggle_tab_overview
 # Open, Close, and Navigate Tabs
 keybind = ctrl+shift+t=new_tab
 keybind = ctrl+shift+left=previous_tab
-keybind = ctrl+page_up=previous_tab
-keybind = ctrl+shift+tab=previous_tab
 keybind = ctrl+shift+right=next_tab
+# keybind = ctrl+page_up=previous_tab
+# keybind = ctrl+shift+tab=previous_tab
 keybind = ctrl+tab=next_tab
 keybind = ctrl+page_down=next_tab
 

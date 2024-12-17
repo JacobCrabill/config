@@ -10,7 +10,8 @@
 # Set the default terminal emulator
 # gsettings set org.gnome.desktop.default-applications.terminal exec 'gnome-terminal'      # Default in Ubuntu
 # gsettings set org.gnome.desktop.default-applications.terminal exec 'x-terminal-emulator' # Same as gnome-terminal
-gsettings set org.gnome.desktop.default-applications.terminal exec 'kitty'               # New favorite!
+# gsettings set org.gnome.desktop.default-applications.terminal exec 'kitty'               # Solid, Performant, Dependable
+gsettings set org.gnome.desktop.default-applications.terminal exec 'ghostty'               # New favorite!
 
 # Configure my preferred keybindings for workspace management
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-left "['<Super>Left','<Alt>H']"
